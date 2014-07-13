@@ -8,6 +8,7 @@ These modules are built on top of the Willie system.
 http://willie.dftba.net/
 """
 
+from willie.config import ConfigurationError
 from willie.tools import WillieMemory
 from willie.module import interval, commands, NOLIMIT, OP
 
@@ -21,6 +22,8 @@ def setup(bot):
         'Do you like roleplaying? We do a weekly Pathfinder series called "Pathfinders found" on Thursdays. All previous episodes (except ep3, sorry) are available on my profile.',
         'If you\'re enjoying the stream, please give me a follow. It helps a lot on my road to partnership. Thanks!'
         ]
+    if not bot.config.has_option('LRB','channel') or not bot.config.has_option('LRB','ctt_default'):
+        raise ConfigurationError("LRB Timer Module not configured.")
 
 def configure(config):
     """
