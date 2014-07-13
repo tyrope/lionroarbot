@@ -19,11 +19,11 @@ def initiative(bot, trigger):
     bot.say("http://31.media.tumblr.com/1dc5316076bfe562f803647a294872ed/tumblr_mk7t4vCTek1rjq9lao1_500.gif")
 
 @commands('mountain')
-def ip(bot, trigger):
+def mountain(bot, trigger):
     bot.say("http://2.bp.blogspot.com/-3E782nyfAXY/UwGAgoYpszI/AAAAAAAAHs0/qAxtatRJ0ho/w555-h495-no/DM+is+sick+of+your+shit.jpg")
 
 @commands('portal')
-def mods(bot, trigger):
+def portal(bot, trigger):
     bot.say("Tyrope is speedrunning, meaning he's trying to play the game as fast as possible. The Glitchless category means he can't abuse many of the \"faults\" in the coding. Current leader-boards are available here: http://dft.ba/-P1speedrun")
 
 @commands('roulette')

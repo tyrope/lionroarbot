@@ -62,7 +62,7 @@ def ctt(bot, trigger):
         bot.memory['timer']['ctt'] = 'kiRU4'
         bot.reply('Reset click to tweet link to default.')
 
-@commands('timer')
+@commands('spam')
 def timer(bot, trigger):
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return NOLIMIT
