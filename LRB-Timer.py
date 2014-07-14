@@ -83,7 +83,7 @@ def ctt(bot, trigger):
 @commands('spam')
 def timer(bot, trigger):
     try:
-    if bot.privileges[trigger.sender][trigger.nick] < OP:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
             return NOLIMIT
     except KeyError as e:
         pass
