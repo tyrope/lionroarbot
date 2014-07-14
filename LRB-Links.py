@@ -20,9 +20,12 @@ def link_detection(bot, trigger):
     """
     Automatically detect links and act on it.
     """
-    if bot.privileges[trigger.sender][trigger.nick] >= OP:
-        #Channel ops can link just fine.
-        return NOLIMIT
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] >= OP:
+            #Channel ops can link just fine.
+            return NOLIMIT
+    except KeyError as e:
+        pass
 
     if trigger.nick in bot.memory['permitted_users']:
         bot.memory['permitted_users'].pop(trigger.nick, None)
@@ -37,7 +40,10 @@ def permit(bot, trigger):
     """
     Permit somebody to link.
     """
-    if bot.privileges[trigger.sender][trigger.nick] < OP:
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return NOLIMIT
+    except KeyError as e:
         return NOLIMIT
 
     if trigger.group(3):

@@ -16,8 +16,11 @@ def caps_detection(bot, trigger):
     """
     Automatically detect allcaps and act on it.
     """
-    if bot.privileges[trigger.sender][trigger.nick] >= OP:
-        return NOLIMIT
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] >= OP:
+            return NOLIMIT
+    except KeyError as e:
+        pass
 
     if len(trigger.group(0)) < 10:
         return NOLIMIT

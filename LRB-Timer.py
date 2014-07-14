@@ -67,8 +67,11 @@ def timed_message(bot):
 
 @commands('ctt')
 def ctt(bot, trigger):
-    if bot.privileges[trigger.sender][trigger.nick] < OP:
-        return NOLIMIT
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return NOLIMIT
+    except KeyError as e:
+        pass
 
     if trigger.group(2):
         bot.memory['timer']['ctt'] = trigger.group(2)
@@ -79,8 +82,11 @@ def ctt(bot, trigger):
 
 @commands('spam')
 def timer(bot, trigger):
+    try:
     if bot.privileges[trigger.sender][trigger.nick] < OP:
-        return NOLIMIT
+            return NOLIMIT
+    except KeyError as e:
+        pass
 
     if not trigger.group(3):
         return NOLIMIT
