@@ -63,7 +63,7 @@ def timed_message(bot):
         bot.memory['timer']['index'] = 0
 
     # Say!
-    bot.msg(bot.memory.timer.channel, msg)
+    bot.msg(bot.config.timer.channel, msg)
 
 @commands('ctt')
 def ctt(bot, trigger):
