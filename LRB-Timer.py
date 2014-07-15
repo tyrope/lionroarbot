@@ -54,7 +54,7 @@ def timed_message(bot):
     # CTT thing.
     if 'http://ctt.ec/' in msg:
         if 'ctt' not in bot.memory['timer']:
-            bot.memory['timer']['ctt'] = bot.config.timer.ctt_default
+            bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
         msg = msg % bot.memory['timer']['ctt']
 
     # Move index up one, or loop.
@@ -63,7 +63,7 @@ def timed_message(bot):
         bot.memory['timer']['index'] = 0
 
     # Say!
-    bot.msg(bot.config.timer.channel, msg)
+    bot.msg(bot.config.LRB.channel, msg)
 
 @commands('ctt')
 def ctt(bot, trigger):
@@ -77,7 +77,7 @@ def ctt(bot, trigger):
         bot.memory['timer']['ctt'] = trigger.group(2)
         bot.reply('Updated click to tweet link to http://ctt.ec/%s' % trigger.group(2))
     else:
-        bot.memory['timer']['ctt'] = bot.config.timer.ctt_default
+        bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
         bot.reply('Reset click to tweet link to default.')
 
 @commands('spam')
