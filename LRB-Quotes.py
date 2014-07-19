@@ -9,24 +9,31 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands
+from willie.module import commands, OP
+from sqlite3 import OperationalError # TODO: Fix this if/when WillieDB abstracts
+import random
 
 def setup(bot):
     table_layout = ['id','quote']
 
     if not bot.db:
         raise ConfigurationError("No database configured.")
-    if not bot.db.lrb-quotes:
+    if not bot.db.lrb_quotes:
         # 404 - Table not found.
-        bot.db.add_table('lrb-quotes',table_layout , 'id')
+        bot.db.add_table('lrb_quotes', table_layout, 'id')
 
     for col in table_layout:
         # Just in case not all columns are present.
-        bot.db.lrb-quotes.add_columns([col])
+        try:
+            bot.db.lrb_quotes.add_columns([col])
+        except OperationalError as e:
+            # TODO: Fix this if/when WillieDB abstracts
+            pass
 
 @commands('quote')
 def quote(bot, trigger):
-    quote = '"This is a test quote" - LionRoarBot, 2014 (Debug)'
+    quote_id = random.randint(0, bot.db.lrb_quotes.size()-1)
+    quote = bot.db.lrb_quotes.get(str(quote_id), 'quote')
     bot.say(quote)
 
 @commands('addquote')
@@ -34,9 +41,12 @@ def addquote(bot, trigger):
     if bot.privileges[trigger.sender][trigger.nick] < OP:
         return bot.reply("Only moderators can add quotes.")
     # Save the quote to the database
-    bot.db.lrb-quotes.update(bot.db.lrb-quotes.size(), {'quote': trigger.group(2)})
-    if recorded:
+
+    quote_id = str(bot.db.lrb_quotes.size())
+    bot.db.lrb_quotes.update(quote_id, {'quote': trigger.group(2)})
+
+    if quote_id in bot.db.lrb_quotes:
         bot.say('Quote recorded.')
     else:
-        bot.say('Quote not recorded.')
+        bot.say('Quote not recorded, try again later.')
 
