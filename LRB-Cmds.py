@@ -14,6 +14,10 @@ from willie.module import commands
 def arrow(bot, trigger):
     bot.say("http://img.4plebs.org/boards/tg/image/1374/03/1374030368304.jpg")
 
+@commands('commands')
+def commands(bot, trigger):
+    bot.reply("My commands are https://github.com/tyrope/lionroarbot/wiki")
+
 @commands('initiative')
 def initiative(bot, trigger):
     bot.say("http://31.media.tumblr.com/1dc5316076bfe562f803647a294872ed/tumblr_mk7t4vCTek1rjq9lao1_500.gif")
@@ -24,15 +28,15 @@ def mountain(bot, trigger):
 
 @commands('portal')
 def portal(bot, trigger):
-    bot.say("Tyrope is speedrunning, meaning he's trying to play the game as fast as possible. The Glitchless category means he can't abuse many of the \"faults\" in the coding. Current leader-boards are available here: http://dft.ba/-P1speedrun")
+    bot.reply("Tyrope is speedrunning, meaning he's trying to play the game as fast as possible. The Glitchless category means he can't abuse many of the \"faults\" in the coding. Current leader-boards are available here: http://dft.ba/-P1speedrun")
 
 @commands('roulette')
 def roulette(bot, trigger):
-    bot.say("Put your spelunkbucks on the table and bet on my cause of death! (Stream and chat are included on the page) http://spelunkyroulette.sparklinlabs.com/play/tyrope")
+    bot.reply("Put your spelunkbucks on the table and bet on my cause of death! (Stream and chat are included on the page) http://spelunkyroulette.sparklinlabs.com/play/tyrope")
 
 @commands('timer')
 def timer(bot, trigger):
-    bot.say("The timer at the bottom of the screen during speedruns is LiveSplit. This program is used to track personal best times for specific parts of the game, and ofcourse the overall time. LiveSplit is free to download at http://livesplit.org/")
+    bot.reply("The timer at the bottom of the screen during speedruns is LiveSplit. This program is used to track personal best times for specific parts of the game, and ofcourse the overall time. LiveSplit is free to download at http://livesplit.org/")
 
 @commands('words')
 def words(bot, trigger):
