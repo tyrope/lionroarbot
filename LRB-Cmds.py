@@ -15,7 +15,7 @@ def arrow(bot, trigger):
     bot.say("http://img.4plebs.org/boards/tg/image/1374/03/1374030368304.jpg")
 
 @commands('commands')
-def commands(bot, trigger):
+def cmnds(bot, trigger):
     bot.reply("My commands are https://github.com/tyrope/lionroarbot/wiki")
 
 @commands('initiative')
