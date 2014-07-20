@@ -10,7 +10,6 @@ http://willie.dftba.net/
 
 from willie.config import ConfigurationError
 from willie.module import commands, OP
-from sqlite3 import OperationalError # TODO: Fix this if/when WillieDB abstracts
 
 def setup(bot):
     table_layout = ['nick']
@@ -23,11 +22,8 @@ def setup(bot):
 
     for col in table_layout:
         # Just in case not all columns are present.
-        try:
+        if not bot.db.lrb_regulars.has_columns(col):
             bot.db.lrb_regulars.add_columns([col])
-        except OperationalError as e:
-            # TODO: Fix this if/when WillieDB abstracts
-            pass
 
 @commands('reg','regular')
 def regular(bot, trigger):

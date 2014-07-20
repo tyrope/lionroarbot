@@ -10,7 +10,6 @@ http://willie.dftba.net/
 
 from willie.config import ConfigurationError
 from willie.module import commands, OP
-from sqlite3 import OperationalError # TODO: Fix this if/when WillieDB abstracts
 import random
 
 def setup(bot):
@@ -24,11 +23,8 @@ def setup(bot):
 
     for col in table_layout:
         # Just in case not all columns are present.
-        try:
+        if not bot.db.lrb_quotes.has_columns(col):
             bot.db.lrb_quotes.add_columns([col])
-        except OperationalError as e:
-            # TODO: Fix this if/when WillieDB abstracts
-            pass
 
 @commands('quote')
 def quote(bot, trigger):
