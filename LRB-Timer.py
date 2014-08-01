@@ -15,7 +15,7 @@ from willie.module import interval, commands, NOLIMIT, OP
 def setup(bot):
     bot.memory['timer'] = WillieMemory()
     bot.memory['timer']['index'] = 0
-    bot.memory['timer']['enabled'] = True
+    bot.memory['timer']['enabled'] = False
 
     bot.memory['timer']['lines'] = [ # The bot will cycle through these.
         'Share the love! Click here to tweet the stream. http://ctt.ec/%s', #CTT messages need %s to insert the ID.
