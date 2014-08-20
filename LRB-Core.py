@@ -27,8 +27,11 @@ def setup(bot):
 
 @commands('reg','regular')
 def regular(bot, trigger):
-    if bot.privileges[trigger.sender][trigger.nick] < OP:
-        return bot.reply("Only moderators can alter regulars.")
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return bot.reply("Only moderators can alter regulars.")
+    except KeyError as e:
+        return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
     if not trigger.group(3):
         return bot.reply("Do what?")
