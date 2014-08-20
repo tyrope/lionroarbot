@@ -1,6 +1,6 @@
 #coding: utf8
 """
-LRB-Cmds.py - LionRoarBot Misc. Custom module.
+LRB-Cmds.py - LionRoarBot Custom commands module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
@@ -8,37 +8,130 @@ These modules are built on top of the Willie system.
 http://willie.dftba.net/
 """
 
-from willie.module import commands
+from willie.config import ConfigurationError
+from willie.module import commands, NOLIMIT, rule, OP
 
-@commands('arrow')
-def arrow(bot, trigger):
-    bot.say("http://img.4plebs.org/boards/tg/image/1374/03/1374030368304.jpg")
+def setup(bot):
+    table_layout = ['cmd', 'level', 'response']
 
-@commands('commands')
-def cmnds(bot, trigger):
-    bot.reply("My commands are https://github.com/tyrope/lionroarbot/wiki")
+    if not bot.db:
+        raise ConfigurationError("No database configured.")
+    if not bot.db.lrb_commands:
+        # 404 - Table not found.
+        bot.db.add_table('lrb_commands', table_layout, 'cmd')
 
-@commands('initiative')
-def initiative(bot, trigger):
-    bot.say("http://31.media.tumblr.com/1dc5316076bfe562f803647a294872ed/tumblr_mk7t4vCTek1rjq9lao1_500.gif")
+    for col in table_layout:
+        # Just in case not all columns are present.
+        if not bot.db.lrb_commands.has_columns(col):
+            bot.db.lrb_commands.add_columns([col])
 
-@commands('mountain')
-def mountain(bot, trigger):
-    bot.say("http://2.bp.blogspot.com/-3E782nyfAXY/UwGAgoYpszI/AAAAAAAAHs0/qAxtatRJ0ho/w555-h495-no/DM+is+sick+of+your+shit.jpg")
+@rule('.*')
+def command(bot, trigger):
+    cmd = trigger.group().split(" ")[0]
+    if not cmd in bot.db.lrb_commands:
+        # Not actually a command.
+        return NOLIMIT
+    else:
+        # Command found.
+        dbresult = bot.db.lrb_commands.get(cmd, ('level','response'))
+        lvl = dbresult[0]
+        reply = dbresult[1]
 
-@commands('portal')
-def portal(bot, trigger):
-    bot.reply("Tyrope is speedrunning, meaning he's trying to play the game as fast as possible. The Glitchless category means he can't abuse many of the \"faults\" in the coding. Current leader-boards are available here: http://dft.ba/-P1speedrun")
+        try:
+            isOP = bot.privileges[trigger.sender][trigger.nick] >= OP
+        except KeyError as e:
+            isOP = False
 
-@commands('roulette')
-def roulette(bot, trigger):
-    bot.reply("Put your spelunkbucks on the table and bet on my cause of death! (Stream and chat are included on the page) http://spelunkyroulette.sparklinlabs.com/play/tyrope")
+        # Can the user actually trigger this command?
+        if lvl == 'all':
+            # Everybody can use this.
+            bot.reply(reply)
+        elif lvl == 'mod' and bot.privileges[trigger.sender][trigger.nick] >= OP:
+            # Mods canuse this, This user is a mod, twitch admin or channel owner.
+            bot.reply(reply)
 
-@commands('timer')
-def timer(bot, trigger):
-    bot.reply("The timer at the bottom of the screen during speedruns is LiveSplit. This program is used to track personal best times for specific parts of the game, and ofcourse the overall time. LiveSplit is free to download at http://livesplit.org/")
+        elif lvl == 'owner' and trigger.sender[1:].lower() == trigger.nick.lower():
+            # Only owner can use this, and this is the channel owner.
+            bot.reply(reply)
 
-@commands('words')
-def words(bot, trigger):
-    bot.say("HOW DO I WORDS?!?!")
+        else:
+            # Access Denied.
+            return NOLIMIT
+
+@commands('addcom')
+def addcom(bot, trigger):
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return bot.reply("Only moderators can add commands.")
+    except KeyError as e:
+        return bot.reply("I don't know if you're a mod. #BlameTwitch")
+
+    try:
+        if trigger.group(3).lower() in bot.db.lrb_commands:
+            return bot.reply("That command already exists, try the editcom command")
+        else:
+            cmd = trigger.group(3).lower()
+    except IndexError as e:
+        return bot.reply("Add what command?")
+
+    try:
+        if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
+            return bot.reply("What access level? (all, mod, owner)")
+        else:
+            lvl = trigger.group(4).lower()
+    except IndexError as e:
+        return bot.reply("You forgot access level & response.")
+
+    reply = trigger.group(0)[len(cmd)+len(lvl)+10:] # 10 = !addcom + 3 spaces
+    if len(reply) < 1:
+        return bot.reply("You forgot the response...")
+
+    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply})
+
+    return bot.say("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
+
+@commands('delcom')
+def delcom(bot, trigger):
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return bot.reply("Only moderators can remove commands.")
+    except KeyError as e:
+        return bot.reply("I don't know if you're a mod. #BlameTwitch")
+
+    if trigger.group(3).lower() not in bot.db.lrb_commands:
+        return bot.reply("That command doesn't exist...")
+    else:
+        bot.db.lrb_commands.delete(trigger.group(3).lower())
+        return bot.reply("Command \"%s\" deleted." % (trigger.group(3).lower(),))
+
+@commands('editcom')
+def editcom(bot, trigger):
+    try:
+        if bot.privileges[trigger.sender][trigger.nick] < OP:
+            return bot.reply("Only moderators can remove commands.")
+    except KeyError as e:
+        return bot.reply("I don't know if you're a mod. #BlameTwitch")
+
+    try:
+        if trigger.group(3).lower() not in bot.db.lrb_commands:
+            return bot.reply("That command doesn't exists, try the addcom command")
+        else:
+            cmd = trigger.group(3).lower()
+    except IndexError as e:
+        return bot.reply("Edit what command?")
+
+    try:
+        if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
+            return bot.reply("What access level? (all, mod, owner)")
+        else:
+            lvl = trigger.group(4).lower()
+    except IndexError as e:
+        return bot.reply("You forgot access level & response.")
+
+    reply = trigger.group(0)[len(cmd)+len(lvl)+11:] # 11 = !editcom + 3 spaces
+    if len(reply) < 1:
+        return bot.reply("You forgot the response...")
+
+    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply})
+    return bot.reply("Command \"%s\" modified. Level: \"%s\", response: %s" % (cmd, lvl, reply))
 
