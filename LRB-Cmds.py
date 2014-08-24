@@ -86,9 +86,9 @@ def addcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply})
+    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply.replace('\'', '\'\'')})
 
-    return bot.say("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
+    return bot.reply("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
 
 @commands('delcom')
 def delcom(bot, trigger):

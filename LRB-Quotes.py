@@ -39,7 +39,7 @@ def addquote(bot, trigger):
     # Save the quote to the database
 
     quote_id = str(bot.db.lrb_quotes.size())
-    bot.db.lrb_quotes.update(quote_id, {'quote': trigger.group(2)})
+    bot.db.lrb_quotes.update(quote_id, {'quote': trigger.group(2).replace('\'', '\'\'')})
 
     if quote_id in bot.db.lrb_quotes:
         bot.say('Quote recorded.')
