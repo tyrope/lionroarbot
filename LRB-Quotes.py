@@ -9,7 +9,8 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands, OP
+from willie.tools import WillieMemory
+from willie.module import commands, OP, NOLIMIT
 import random, time
 
 def setup(bot):
