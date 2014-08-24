@@ -10,7 +10,7 @@ http://willie.dftba.net/
 
 from willie.config import ConfigurationError
 from willie.module import commands, OP
-import random
+import random, time
 
 def setup(bot):
     table_layout = ['id','quote']
@@ -26,8 +26,16 @@ def setup(bot):
         if not bot.db.lrb_quotes.has_columns(col):
             bot.db.lrb_quotes.add_columns([col])
 
+    bot.memory['quotes'] = WillieMemory()
+    bot.memory['quotes']['lastused'] = 0
+
 @commands('quote')
 def quote(bot, trigger):
+    if bot.memory['quotes']['lastused'] > int(time.time()) - 60:
+        return NOLIMIT
+    else:
+        bot.memory['quotes']['lastused'] = int(time.time())
+
     quote_id = random.randint(0, bot.db.lrb_quotes.size()-1)
     quote = bot.db.lrb_quotes.get(str(quote_id), 'quote')
     bot.say(quote)
