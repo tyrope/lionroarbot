@@ -56,7 +56,7 @@ def timed_message(bot):
         return NOLIMIT
 
     # Fetch line.
-    msg = bot.db.lrb_timers.get(bot.memory['timer']['index'], 'message')
+    msg = bot.db.lrb_timers.get(str(bot.memory['timer']['index']), 'message')
 
     # CTT thing.
     if 'http://ctt.ec/' in msg:
