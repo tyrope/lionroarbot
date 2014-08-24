@@ -46,14 +46,12 @@ def command(bot, trigger):
         if lvl == 'all':
             # Everybody can use this.
             bot.reply(reply)
-        elif lvl == 'mod' and bot.privileges[trigger.sender][trigger.nick] >= OP:
+        elif lvl == 'mod' and isOP:
             # Mods canuse this, This user is a mod, twitch admin or channel owner.
             bot.reply(reply)
-
         elif lvl == 'owner' and trigger.sender[1:].lower() == trigger.nick.lower():
             # Only owner can use this, and this is the channel owner.
             bot.reply(reply)
-
         else:
             # Access Denied.
             return NOLIMIT
