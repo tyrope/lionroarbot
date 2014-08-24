@@ -13,15 +13,22 @@ from willie.tools import WillieMemory
 from willie.module import interval, commands, NOLIMIT, OP
 
 def setup(bot):
+    table_layout = ['id', 'message']
+
+    if not bot.db:
+        raise ConfigurationError("No database configured.")
+    if not bot.db.lrb_timers:
+        #404 - Table not found
+        bot.db.add_table('lrb_timers', table_layout, 'id')
+
+    for col in table_layout:
+        # Just in case not all columns are present.
+        if not bot.db.lrb_timers.has_columns(col):
+            bot.db.lrb_timers.add_columns([col])
+
     bot.memory['timer'] = WillieMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
-
-    bot.memory['timer']['lines'] = [ # The bot will cycle through these.
-        'Share the love! Click here to tweet the stream. http://ctt.ec/%s', #CTT messages need %s to insert the ID.
-        'Do you like roleplaying? We do a weekly Pathfinder series called "Pathfinders found" on Thursdays. All previous episodes (except ep3, sorry) are available on my profile.',
-        'If you\'re enjoying the stream, please give me a follow. It helps a lot on my road to partnership. Thanks!'
-        ]
     if not bot.config.has_option('LRB','channel') or not bot.config.has_option('LRB','ctt_default'):
         raise ConfigurationError("LRB Timer Module not configured.")
 
@@ -49,7 +56,7 @@ def timed_message(bot):
         return NOLIMIT
 
     # Fetch line.
-    msg = bot.memory['timer']['lines'][bot.memory['timer']['index']]
+    msg = bot.db.lrb_timers.get([bot.memory['timer']['index'], 'message')
 
     # CTT thing.
     if 'http://ctt.ec/' in msg:
@@ -59,7 +66,7 @@ def timed_message(bot):
 
     # Move index up one, or loop.
     bot.memory['timer']['index'] += 1
-    if bot.memory['timer']['index'] >= len(bot.memory['timer']['lines']):
+    if bot.memory['timer']['index'] >= bot.db.lrb_timers.size()-1:
         bot.memory['timer']['index'] = 0
 
     # Say!
