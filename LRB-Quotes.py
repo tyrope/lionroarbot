@@ -42,7 +42,7 @@ def addquote(bot, trigger):
     bot.db.lrb_quotes.update(quote_id, {'quote': trigger.group(2).replace('\'', '\'\'')})
 
     if quote_id in bot.db.lrb_quotes:
-        bot.say('Quote recorded.')
+        bot.reply('Quote recorded.')
     else:
-        bot.say('Quote not recorded, try again later.')
+        bot.reply('Quote not recorded, try again later.')
 
