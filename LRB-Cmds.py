@@ -130,6 +130,6 @@ def editcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply})
+    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply.replace('\'', '\'\'')})
     return bot.reply("Command \"%s\" modified. Level: \"%s\", response: %s" % (cmd, lvl, reply))
 
