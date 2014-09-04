@@ -48,7 +48,7 @@ def update_cmds(bot):
     for cmd in bot.db.lrb_commands.keys():
         # ALL THE COMMANDS!
         result = bot.db.lrb_commands.get(cmd[0], ('level','response'))
-        cmds.append(('%s - Level: %s - Response: %s\n\r' % (str(cmd[0]), result[0], result[1])).encode('utf-8'))
+        cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), result[0], result[1])).encode('utf-8'))
 
     # Open the file (empty it)
     listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower(), 'w')
