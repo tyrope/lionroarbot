@@ -9,7 +9,7 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands, NOLIMIT, rule, OP
+from willie.module import commands, NOLIMIT, rule, OP, interval
 
 def setup(bot):
     table_layout = ['cmd', 'level', 'response']
@@ -24,6 +24,39 @@ def setup(bot):
         # Just in case not all columns are present.
         if not bot.db.lrb_commands.has_columns(col):
             bot.db.lrb_commands.add_columns([col])
+
+    if not bot.config.has_option('LRB','cmds_folder') or not bot.config.has_option('LRB','cmds_link'):
+        raise ConfigurationError("LRB Cmds not configured.")
+
+def configure(config):
+    """
+| [LRB] | example | purpose |
+| -------- | ------- | ------- |
+| cmds_folder | /home/lionroarbot/cmdfiles/%s | The location where the bot will store the commands list. |
+| cmds_link | http://lrb.tyrope.nl/%s | The URL where people can see the commands list. |
+"""
+    chunk = ''
+    if config.option('Configuring LRB Commands module', False):
+        config.interactive_add('LRB', 'cmds_folder', 'cmds_folder', '')
+        config.interactive_add('LRB', 'cmds_link', 'cmds_link', '')
+    return chunk
+
+@interval(3600)
+def update_cmds(bot):
+
+    cmds = list()
+    for cmd in bot.db.lrb_commands.keys():
+        # ALL THE COMMANDS!
+        result = bot.db.lrb_commands.get(cmd[0], ('level','response'))
+        cmds.append(('%s - Level: %s - Response: %s\n' % (str(cmd[0]), result[0], result[1])).encode('utf-8'))
+
+    # Open the file (empty it)
+    listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower(), 'w')
+    # Write all the commands
+    listfile.writelines(cmds)
+    # Close and exit.
+    listfile.close()
+    return NOLIMIT
 
 @rule('.*')
 def command(bot, trigger):
@@ -87,6 +120,10 @@ def addcom(bot, trigger):
     bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply.replace('\'', '\'\'')})
 
     return bot.reply("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
+
+@commands('commands')
+def list_commands(bot, trigger):
+    return bot.reply("I have a lot of commands... see %s (Updated hourly)" % (bot.config.LRB.cmds_link % (bot.nick.lower(),),))
 
 @commands('delcom')
 def delcom(bot, trigger):
