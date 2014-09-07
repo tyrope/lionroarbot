@@ -29,7 +29,8 @@ def setup(bot):
     bot.memory['timer'] = WillieMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
-    if not bot.config.has_option('LRB','channel') or not bot.config.has_option('LRB','ctt_default'):
+    if not bot.config.has_option('LRB','channel') or not bot.config.has_option('LRB','ctt_default') \
+    or not bot.config.has_option('LRB','timers_folder') or not bot.config.has_option('LRB','timers_link'):
         raise ConfigurationError("LRB Timer Module not configured.")
 
 def configure(config):
@@ -38,13 +39,32 @@ def configure(config):
 | -------- | ------- | ------- |
 | channel | #LionRoarBot | The channel to spam these messages in. |
 | ctt_default | kiRU4 | The default click to tweet URL ID. |
+| timers_folder | /home/lionroarbot/timerfiles/%s | The location where the bot will store the timers list. |
+| timers_link | http://lrb.tyrope.nl/%s | The URL where people can see the timers list. |
 """
     chunk = ''
     if config.option('Configuring LRB Timer module', False):
         config.interactive_add('LRB', 'channel', 'channel', '')
         config.interactive_add('LRB', 'ctt_default', 'ctt-default', '')
+        config.interactive_add('LRB', 'timers_folder', 'timers_folder', '')
+        config.interactive_add('LRB', 'timers_link', 'timers_link', '')
     return chunk
 
+@interval(3)
+def update_timers(bot):
+    timers = list()
+    for timer in bot.db.lrb_timers.keys():
+        # ALL THE TIMERS!
+        result = bot.db.lrb_timers.get(str(timer[0]), ('message',))
+        timers.append(('[%s] - %s\r\n' % (str(timer[0]), result[0])).encode('utf-8'))
+
+    # Open the file (empty it)
+    listfile = open(bot.config.LRB.timers_folder + bot.nick.lower() + '-timers', 'w')
+    # Write all the timers
+    listfile.writelines(timers)
+    # Close and exit.
+    listfile.close()
+    return NOLIMIT
 
 @interval(900)
 def timed_message(bot):
@@ -109,3 +129,6 @@ def timer(bot, trigger):
     else:
         return NOLIMIT
 
+@commands('listtimers')
+def list_timers(bot, trigger):
+    return bot.reply("My pre-programmed spam can be found at %s (Updated hourly)" % (bot.config.LRB.timers_link % (bot.nick.lower()+"-timers",),))
