@@ -51,7 +51,7 @@ def update_cmds(bot):
         cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), result[0], result[1])).encode('utf-8'))
 
     # Open the file (empty it)
-    listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower(), 'w')
+    listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower() + '-commands', 'w')
     # Write all the commands
     listfile.writelines(cmds)
     # Close and exit.
@@ -123,7 +123,7 @@ def addcom(bot, trigger):
 
 @commands('commands')
 def list_commands(bot, trigger):
-    return bot.reply("I have a lot of commands... see %s (Updated hourly)" % (bot.config.LRB.cmds_link % (bot.nick.lower(),),))
+    return bot.reply("I have a lot of commands... see %s (Updated hourly)" % (bot.config.LRB.cmds_link % (bot.nick.lower()+"-commands",),))
 
 @commands('delcom')
 def delcom(bot, trigger):
