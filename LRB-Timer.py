@@ -50,7 +50,7 @@ def configure(config):
         config.interactive_add('LRB', 'timers_link', 'timers_link', '')
     return chunk
 
-@interval(3)
+@interval(3600)
 def update_timers(bot):
     timers = list()
     for timer in bot.db.lrb_timers.keys():
