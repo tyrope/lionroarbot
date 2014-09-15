@@ -60,7 +60,7 @@ def update_cmds(bot):
 
 @rule('.*')
 def command(bot, trigger):
-    cmd = trigger.group().split(" ")[0]
+    cmd = trigger.group().split(" ")[0].lower()
     if not cmd in bot.db.lrb_commands:
         # Not actually a command.
         return NOLIMIT
