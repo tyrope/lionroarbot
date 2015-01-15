@@ -25,7 +25,7 @@ def configure(config):
             'Check out %(name)s on %(link)s! They were last playing %(game)s.')
     return chunk
 
-@commands('follow','shoutout')
+@commands('so')
 def shoutout(bot, trigger):
     """
     Share a little bit of twitch love.
