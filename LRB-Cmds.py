@@ -12,18 +12,8 @@ from willie.config import ConfigurationError
 from willie.module import commands, NOLIMIT, rule, OP, interval
 
 def setup(bot):
-    table_layout = ['cmd', 'level', 'response']
-
-    if not bot.db:
-        raise ConfigurationError("No database configured.")
-    if not bot.db.lrb_commands:
-        # 404 - Table not found.
-        bot.db.add_table('lrb_commands', table_layout, 'cmd')
-
-    for col in table_layout:
-        # Just in case not all columns are present.
-        if not bot.db.lrb_commands.has_columns(col):
-            bot.db.lrb_commands.add_columns([col])
+    bot.db.execute('CREATE TABLE IF NOT EXSISTS lrb_commands '+
+        '(cmd STRING, level STRING, response STRING, PRIMARY KEY (cmd))')
 
     if not bot.config.has_option('LRB','cmds_folder') or not bot.config.has_option('LRB','cmds_link'):
         raise ConfigurationError("LRB Cmds not configured.")
@@ -45,10 +35,9 @@ def configure(config):
 def update_cmds(bot):
 
     cmds = list()
-    for cmd in bot.db.lrb_commands.keys():
+    for cmd in bot.db.execute('SELECT cmd, level, response FROM lrb_commands'):
         # ALL THE COMMANDS!
-        result = bot.db.lrb_commands.get(cmd[0], ('level','response'))
-        cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), result[0], result[1])).encode('utf-8'))
+        cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), cmd[1], cmd[2])).encode('utf-8'))
 
     # Open the file (empty it)
     listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower() + '-commands', 'w')
@@ -61,14 +50,15 @@ def update_cmds(bot):
 @rule('.*')
 def command(bot, trigger):
     cmd = trigger.group().split(" ")[0].lower()
-    if not cmd in bot.db.lrb_commands:
+    ret = bot.db.execute('SELECT level, response FROM lrb_commands WHERE cmd=?',
+        (cmd,)).fetchone()
+    if not ret:
         # Not actually a command.
         return NOLIMIT
     else:
         # Command found.
-        dbresult = bot.db.lrb_commands.get(cmd, ('level','response'))
-        lvl = dbresult[0]
-        reply = dbresult[1]
+        lvl = ret[0]
+        reply = ret[1]
 
         try:
             isOP = bot.privileges[trigger.sender][trigger.nick] >= OP
@@ -98,7 +88,8 @@ def addcom(bot, trigger):
         return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
     try:
-        if trigger.group(3).lower() in bot.db.lrb_commands:
+        if bot.db.execute('SELECT id FROM lrb_commands WHERE cmd =?'+
+            (trigger.group(3).lower(),).fetchone():
             return bot.reply("That command already exists, try the editcom command")
         else:
             cmd = trigger.group(3).lower()
@@ -117,7 +108,10 @@ def addcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply.replace('\'', '\'\'')})
+    count = bot.db.execute('SELECT COUNT(*) FROM lrb_commands').fetchone()[0]
+
+    bot.db.execute('INSERT INTO lrb_commands (id, cmd, level, response) VALUES '+
+        '(?,?,?,?)', (count, cmd, lvl, reply.replace('\'', '\'\'')))
 
     return bot.reply("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
 
@@ -133,11 +127,15 @@ def delcom(bot, trigger):
     except KeyError as e:
         return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
-    if trigger.group(3).lower() not in bot.db.lrb_commands:
+    cmd = trigger.group(3).lower()
+    ret = bot.db.execute('SELECT * FROM lrb_commands WHERE cmd=?',
+        (cmd,)).fetchone()
+
+    if not ret:
         return bot.reply("That command doesn't exist...")
     else:
-        bot.db.lrb_commands.delete(trigger.group(3).lower())
-        return bot.reply("Command \"%s\" deleted." % (trigger.group(3).lower(),))
+        bot.db.execute('DELETE FROM lrb_commands WHERE cmd=?', (cmd,))
+        return bot.reply("Command \"%s\" deleted." % (cmd,))
 
 @commands('editcom')
 def editcom(bot, trigger):
@@ -148,10 +146,13 @@ def editcom(bot, trigger):
         return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
     try:
-        if trigger.group(3).lower() not in bot.db.lrb_commands:
+        cmd = trigger.group(3).lower()
+        ret = bot.db.execute('SELECT id FROM lrb_commands WHERE cmd=?',
+            (cmd,)).fetchone()
+        if not ret:
             return bot.reply("That command doesn't exists, try the addcom command")
         else:
-            cmd = trigger.group(3).lower()
+            cmd_id = ret[0]
     except IndexError as e:
         return bot.reply("Edit what command?")
 
@@ -167,6 +168,7 @@ def editcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    bot.db.lrb_commands.update(cmd, {'level': lvl, 'response': reply.replace('\'', '\'\'')})
+    bot.db.execute('UPDATE lrb_commands SET level=?, response=? WHERE id=?',
+        (lvl, reply.replace('\'', '\'\'', cmd_id)))
     return bot.reply("Command \"%s\" modified. Level: \"%s\", response: %s" % (cmd, lvl, reply))
 
