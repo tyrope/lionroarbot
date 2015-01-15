@@ -12,7 +12,7 @@ from willie.config import ConfigurationError
 from willie.module import commands, NOLIMIT, rule, OP, interval
 
 def setup(bot):
-    bot.db.execute('CREATE TABLE IF NOT EXSISTS lrb_commands '+
+    bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_commands '+
         '(cmd STRING, level STRING, response STRING, PRIMARY KEY (cmd))')
 
     if not bot.config.has_option('LRB','cmds_folder') or not bot.config.has_option('LRB','cmds_link'):
@@ -89,7 +89,7 @@ def addcom(bot, trigger):
 
     try:
         if bot.db.execute('SELECT id FROM lrb_commands WHERE cmd =?'+
-            (trigger.group(3).lower(),).fetchone():
+            (trigger.group(3).lower(),)).fetchone()[0]:
             return bot.reply("That command already exists, try the editcom command")
         else:
             cmd = trigger.group(3).lower()
