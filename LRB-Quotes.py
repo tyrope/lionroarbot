@@ -14,18 +14,8 @@ from willie.module import commands, OP, NOLIMIT
 import random, time
 
 def setup(bot):
-    table_layout = ['id','quote']
-
-    if not bot.db:
-        raise ConfigurationError("No database configured.")
-    if not bot.db.lrb_quotes:
-        # 404 - Table not found.
-        bot.db.add_table('lrb_quotes', table_layout, 'id')
-
-    for col in table_layout:
-        # Just in case not all columns are present.
-        if not bot.db.lrb_quotes.has_columns(col):
-            bot.db.lrb_quotes.add_columns([col])
+    bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_quotes '+
+        '(id STRING, quote STRING, PRIMARY KEY (ID))')
 
     bot.memory['quotes'] = WillieMemory()
     bot.memory['quotes']['lastused'] = 0
@@ -37,9 +27,11 @@ def quote(bot, trigger):
     else:
         bot.memory['quotes']['lastused'] = int(time.time())
 
-    quote_id = random.randint(0, bot.db.lrb_quotes.size()-1)
-    quote = bot.db.lrb_quotes.get(str(quote_id), 'quote')
-    bot.say(quote)
+    count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
+    ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
+        str(random.randint(0, count)))
+    msg = ret.fetchone()[0]
+    bot.say(msg)
 
 @commands('addquote')
 def addquote(bot, trigger):
@@ -47,10 +39,13 @@ def addquote(bot, trigger):
         return bot.reply("Only moderators can add quotes.")
     # Save the quote to the database
 
+    count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     quote_id = str(bot.db.lrb_quotes.size())
-    bot.db.lrb_quotes.update(quote_id, {'quote': trigger.group(2).replace('\'', '\'\'')})
+    bot.db.execute('INSERT INTO lrb_quotes (id, quote) VALUES ?, ?',
+        (quote_id, trigger.group(2).replace('\'', '\'\'')))
 
-    if quote_id in bot.db.lrb_quotes:
+    if bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
+        quote_id).fetchone():
         bot.reply('Quote recorded.')
     else:
         bot.reply('Quote not recorded, try again later.')
