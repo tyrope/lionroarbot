@@ -13,24 +13,16 @@ from willie.tools import WillieMemory
 from willie.module import interval, commands, NOLIMIT, OP
 
 def setup(bot):
-    table_layout = ['id', 'message']
-
-    if not bot.db:
-        raise ConfigurationError("No database configured.")
-    if not bot.db.lrb_timers:
-        #404 - Table not found
-        bot.db.add_table('lrb_timers', table_layout, 'id')
-
-    for col in table_layout:
-        # Just in case not all columns are present.
-        if not bot.db.lrb_timers.has_columns(col):
-            bot.db.lrb_timers.add_columns([col])
+    bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_timers '+
+        '(id STRING, message STRING, PRIMARY KEY (id))')
 
     bot.memory['timer'] = WillieMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
-    if not bot.config.has_option('LRB','channel') or not bot.config.has_option('LRB','ctt_default') \
-    or not bot.config.has_option('LRB','timers_folder') or not bot.config.has_option('LRB','timers_link'):
+    if not bot.config.has_option('LRB','channel') \
+    or not bot.config.has_option('LRB','ctt_default') \
+    or not bot.config.has_option('LRB','timers_folder') \
+    or not bot.config.has_option('LRB','timers_link'):
         raise ConfigurationError("LRB Timer Module not configured.")
 
 def configure(config):
@@ -53,13 +45,14 @@ def configure(config):
 @interval(3600)
 def update_timers(bot):
     timers = list()
-    for timer in bot.db.lrb_timers.keys():
+    for timer in bot.db.execute('SELECT * FROM lrb_timers'):
         # ALL THE TIMERS!
-        result = bot.db.lrb_timers.get(str(timer[0]), ('message',))
-        timers.append(('[%s] - %s\r\n' % (str(timer[0]), result[0])).encode('utf-8'))
+        timers.append(
+            ('[%s] - %s\r\n' % (str(timer[0]), timer[1])).encode('utf-8'))
 
     # Open the file (empty it)
-    listfile = open(bot.config.LRB.timers_folder + bot.nick.lower() + '-timers', 'w')
+    listfile = open(bot.config.LRB.timers_folder + bot.nick.lower() + \
+        '-timers', 'w')
     # Write all the timers
     listfile.writelines(timers)
     # Close and exit.
@@ -76,7 +69,9 @@ def timed_message(bot):
         return NOLIMIT
 
     # Fetch line.
-    msg = bot.db.lrb_timers.get(str(bot.memory['timer']['index']), 'message')
+    ret = bot.db.execute('SELECT message FROM lrb_timers WHERE id=?',
+        str(bot.memory['timer']['index']))
+    msg = ret.fetchone()[0]
 
     # CTT thing.
     if 'http://ctt.ec/' in msg:
@@ -86,7 +81,10 @@ def timed_message(bot):
 
     # Move index up one, or loop.
     bot.memory['timer']['index'] += 1
-    if bot.memory['timer']['index'] >= bot.db.lrb_timers.size()-1:
+    count = bot.db.execute('SELECT COUNT(*) FROM lrb_timers').fetchone()[0]
+    bot.debug('timer', 'Index: %s, Count: %s' %
+        (bot.memory['timer']['index'], count), 'warning')
+    if bot.memory['timer']['index'] >= int(count):
         bot.memory['timer']['index'] = 0
 
     # Say!
@@ -102,7 +100,8 @@ def ctt(bot, trigger):
 
     if trigger.group(2):
         bot.memory['timer']['ctt'] = trigger.group(2)
-        bot.reply('Updated click to tweet link to http://ctt.ec/%s' % trigger.group(2))
+        bot.reply('Updated click to tweet link to http://ctt.ec/%s' %
+            trigger.group(2))
     else:
         bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
         bot.reply('Reset click to tweet link to default.')
@@ -131,4 +130,7 @@ def timer(bot, trigger):
 
 @commands('listtimers')
 def list_timers(bot, trigger):
-    return bot.reply("My pre-programmed spam can be found at %s (Updated hourly)" % (bot.config.LRB.timers_link % (bot.nick.lower()+"-timers",),))
+    return bot.reply(
+        "My pre-programmed spam can be found at %s (Updated hourly)" %
+        (bot.config.LRB.timers_link % (bot.nick.lower()+"-timers",),))
+
