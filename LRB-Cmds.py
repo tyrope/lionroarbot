@@ -88,8 +88,8 @@ def addcom(bot, trigger):
         return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
     try:
-        if bot.db.execute('SELECT id FROM lrb_commands WHERE cmd =?'+
-            (trigger.group(3).lower(),)).fetchone()[0]:
+        if bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd =?',
+            (trigger.group(3).lower(),)).fetchone():
             return bot.reply("That command already exists, try the editcom command")
         else:
             cmd = trigger.group(3).lower()
@@ -108,10 +108,8 @@ def addcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    count = bot.db.execute('SELECT COUNT(*) FROM lrb_commands').fetchone()[0]
-
-    bot.db.execute('INSERT INTO lrb_commands (id, cmd, level, response) VALUES '+
-        '(?,?,?,?)', (count, cmd, lvl, reply.replace('\'', '\'\'')))
+    bot.db.execute('INSERT INTO lrb_commands (cmd, level, response) VALUES '+
+        '(?,?,?)', (cmd, lvl, reply.replace('\'', '\'\'')))
 
     return bot.reply("Added command \"%s\", access level \"%s\", response: %s" % (cmd, lvl, reply))
 
@@ -147,12 +145,10 @@ def editcom(bot, trigger):
 
     try:
         cmd = trigger.group(3).lower()
-        ret = bot.db.execute('SELECT id FROM lrb_commands WHERE cmd=?',
+        ret = bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd=?',
             (cmd,)).fetchone()
         if not ret:
             return bot.reply("That command doesn't exists, try the addcom command")
-        else:
-            cmd_id = ret[0]
     except IndexError as e:
         return bot.reply("Edit what command?")
 
@@ -168,7 +164,7 @@ def editcom(bot, trigger):
     if len(reply) < 1:
         return bot.reply("You forgot the response...")
 
-    bot.db.execute('UPDATE lrb_commands SET level=?, response=? WHERE id=?',
-        (lvl, reply.replace('\'', '\'\'', cmd_id)))
+    bot.db.execute('UPDATE lrb_commands SET level=?, response=? WHERE cmd=?',
+        (lvl, reply.replace('\'', '\'\''), cmd))
     return bot.reply("Command \"%s\" modified. Level: \"%s\", response: %s" % (cmd, lvl, reply))
 
