@@ -29,7 +29,7 @@ def quote(bot, trigger):
 
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
-        str(random.randint(0, count)))
+        (str(random.randint(0, count)),))
     msg = ret.fetchone()[0]
     bot.say(msg)
 
@@ -45,7 +45,7 @@ def addquote(bot, trigger):
         (quote_id, trigger.group(2).replace('\'', '\'\'')))
 
     if bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
-        quote_id).fetchone():
+        (quote_id,)).fetchone():
         bot.reply('Quote recorded.')
     else:
         bot.reply('Quote not recorded, try again later.')
