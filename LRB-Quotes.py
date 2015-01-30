@@ -30,8 +30,11 @@ def quote(bot, trigger):
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
         (str(random.randint(0, count)),))
-    msg = ret.fetchone()[0]
-    bot.say(msg)
+    try:
+        msg = ret.fetchone()[0]
+        bot.say(msg)
+    except TypeError as e:
+        return quote(bot, trigger)
 
 @commands('addquote')
 def addquote(bot, trigger):
