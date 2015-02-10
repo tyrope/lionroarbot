@@ -37,14 +37,17 @@ def shoutout(bot, trigger):
         return bot.reply("I don't know if you're a mod. #BlameTwitch")
 
     if trigger.group(2):
-        query_url = 'https://api.twitch.tv/kraken/channels/'+trigger.group(2)
-        answer = web.get(query_url)
+        try:
+            query_url = 'https://api.twitch.tv/kraken/channels/'+trigger.group(2)
+            answer = web.get(query_url)
 
-        data = json.loads(answer)
+            data = json.loads(answer)
 
-        replaceData = {'name': data['display_name'],
-            'link': data['url'], 'game': data['game']}
-        return bot.say(bot.config.LRB.shoutmsg % replaceData)
+            replaceData = {'name': data['display_name'],
+                'link': data['url'], 'game': data['game']}
+            return bot.say(bot.config.LRB.shoutmsg % replaceData)
+        except:
+            return bot.reply("The Twitch API  be derp. :( #BlameTwitch")
     else:
         return NOLIMIT
 
