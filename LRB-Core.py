@@ -9,22 +9,17 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands, OP
+from willie.module import commands, OP, require_privilege
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_regulars '+
         '(nick STRING, PRIMARY KEY (nick))')
 
+@require_privilege(OP, 'Only moderators can alter regulars.')
 @commands('reg','regular')
 def regular(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return bot.reply("Only moderators can alter regulars.")
-    except KeyError as e:
-        return bot.reply("I don't know if you're a mod. #BlameTwitch")
-
     if not trigger.group(3):
-        return bot.reply("Do what?")
+        return bot.reply("Do what? (add/del)")
     if not trigger.group(4):
         return bot.reply("To who?")
 

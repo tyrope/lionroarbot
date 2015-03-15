@@ -25,17 +25,12 @@ def configure(config):
             'Check out %(name)s on %(link)s! They were last playing %(game)s.')
     return chunk
 
+@require_privilege(OP)
 @commands('so')
 def shoutout(bot, trigger):
     """
     Share a little bit of twitch love.
     """
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return NOLIMIT
-    except KeyError as e:
-        return bot.reply("I don't know if you're a mod. #BlameTwitch")
-
     if trigger.group(2):
         try:
             query_url = 'https://api.twitch.tv/kraken/channels/'+trigger.group(2)
@@ -47,7 +42,7 @@ def shoutout(bot, trigger):
                 'link': data['url'], 'game': data['game']}
             return bot.say(bot.config.LRB.shoutmsg % replaceData)
         except:
-            return bot.reply("The Twitch API  be derp. :( #BlameTwitch")
+            return bot.reply("The Twitch API be derp. :( #BlameTwitch")
     else:
         return NOLIMIT
 

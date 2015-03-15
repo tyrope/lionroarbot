@@ -10,7 +10,7 @@ http://willie.dftba.net/
 
 from willie.config import ConfigurationError
 from willie.tools import WillieMemory
-from willie.module import commands, OP, NOLIMIT
+from willie.module import commands, OP, NOLIMIT, require_privilege
 import random, time
 
 def setup(bot):
@@ -36,12 +36,10 @@ def quote(bot, trigger):
     except TypeError as e:
         return quote(bot, trigger)
 
+@require_privilege(OP, 'Only moderators can add quotes')
 @commands('addquote')
 def addquote(bot, trigger):
-    if bot.privileges[trigger.sender][trigger.nick] < OP:
-        return bot.reply("Only moderators can add quotes.")
     # Save the quote to the database
-
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     bot.db.execute('INSERT INTO lrb_quotes (id, quote) VALUES (?, ?)',
         (count, trigger.group(2).replace('\'', '\'\'')))

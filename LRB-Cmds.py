@@ -9,7 +9,8 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands, NOLIMIT, rule, OP, interval
+from willie.module import commands, NOLIMIT, rule, interval
+from willie.module import require_privilege, OP
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_commands '+
@@ -79,14 +80,9 @@ def command(bot, trigger):
             # Access Denied.
             return NOLIMIT
 
+@require_privilege(OP, 'Only moderators can add commands.')
 @commands('addcom')
 def addcom(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return bot.reply("Only moderators can add commands.")
-    except KeyError as e:
-        return bot.reply("I don't know if you're a mod. #BlameTwitch")
-
     try:
         if bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd =?',
             (trigger.group(3).lower(),)).fetchone():
@@ -117,14 +113,9 @@ def addcom(bot, trigger):
 def list_commands(bot, trigger):
     return bot.reply("I have a lot of commands... see %s (Updated hourly)" % (bot.config.LRB.cmds_link % (bot.nick.lower()+"-commands",),))
 
+@require_privilege(OP, 'Only moderators can delete commands.')
 @commands('delcom')
 def delcom(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return bot.reply("Only moderators can remove commands.")
-    except KeyError as e:
-        return bot.reply("I don't know if you're a mod. #BlameTwitch")
-
     cmd = trigger.group(3).lower()
     ret = bot.db.execute('SELECT * FROM lrb_commands WHERE cmd=?',
         (cmd,)).fetchone()
@@ -135,14 +126,9 @@ def delcom(bot, trigger):
         bot.db.execute('DELETE FROM lrb_commands WHERE cmd=?', (cmd,))
         return bot.reply("Command \"%s\" deleted." % (cmd,))
 
+@require_privilege(OP, 'Only moderators can edit commands.')
 @commands('editcom')
 def editcom(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return bot.reply("Only moderators can remove commands.")
-    except KeyError as e:
-        return bot.reply("I don't know if you're a mod. #BlameTwitch")
-
     try:
         cmd = trigger.group(3).lower()
         ret = bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd=?',
