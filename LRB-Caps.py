@@ -20,7 +20,9 @@ def caps_detection(bot, trigger):
         if bot.privileges[trigger.sender][trigger.nick] >= OP:
             return NOLIMIT
     except KeyError as e:
-        pass
+        # This potentially lets new-joiners shout for a little bit.
+        # #blametwitch
+        return NOLIMIT
 
     if len(trigger.group(0)) < 10:
         return NOLIMIT
