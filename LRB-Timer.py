@@ -10,7 +10,7 @@ http://willie.dftba.net/
 
 from willie.config import ConfigurationError
 from willie.tools import WillieMemory
-from willie.module import interval, commands, NOLIMIT, OP
+from willie.module import interval, commands, NOLIMIT, OP, require_privilege
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_timers '+
@@ -90,14 +90,9 @@ def timed_message(bot):
     # Say!
     bot.msg(bot.config.LRB.channel, msg)
 
+@require_privilege(OP)
 @commands('ctt')
 def ctt(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return NOLIMIT
-    except KeyError as e:
-        pass
-
     if trigger.group(2):
         bot.memory['timer']['ctt'] = trigger.group(2)
         bot.reply('Updated click to tweet link to http://ctt.ec/%s' %
@@ -106,14 +101,9 @@ def ctt(bot, trigger):
         bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
         bot.reply('Reset click to tweet link to default.')
 
+@require_privilege(OP)
 @commands('spam')
 def timer(bot, trigger):
-    try:
-        if bot.privileges[trigger.sender][trigger.nick] < OP:
-            return NOLIMIT
-    except KeyError as e:
-        pass
-
     if not trigger.group(3):
         return NOLIMIT
 
