@@ -10,7 +10,7 @@ http://willie.dftba.net/
 
 from collections import Counter
 from willie import web
-from willie.module import commands, NOLIMIT, OP
+from willie.module import commands, NOLIMIT, OP,require_privilege
 import json
 
 def configure(config):
