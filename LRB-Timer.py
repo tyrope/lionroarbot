@@ -101,7 +101,7 @@ def ctt(bot, trigger):
         bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
         bot.reply('Reset click to tweet link to default.')
 
-@require_privilege(OP)
+@require_privilege(OP, 'No spam unless you\'re a moderator.')
 @commands('spam')
 def timer(bot, trigger):
     if not trigger.group(3):

@@ -25,7 +25,7 @@ def configure(config):
             'Check out %(name)s on %(link)s! They were last playing %(game)s.')
     return chunk
 
-@require_privilege(OP)
+@require_privilege(OP, 'I only let mods do shoutouts.')
 @commands('so')
 def shoutout(bot, trigger):
     """
