@@ -9,7 +9,7 @@ http://willie.dftba.net/
 """
 
 from willie.config import ConfigurationError
-from willie.module import commands, OP, require_privilege
+from willie.module import commands, OP, require_privilege, event, rule
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_regulars '+
