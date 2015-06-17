@@ -15,6 +15,12 @@ def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_regulars '+
         '(nick STRING, PRIMARY KEY (nick))')
 
+# Twitch turned off JOIN/PART by default, we have to ASK for it now...
+@event('001')
+@rule('.*')
+def requestJoinsParts(bot, trigger):
+    bot.write(["CAP REQ :twitch.tv/membership"])
+
 @require_privilege(OP, 'Only moderators can alter regulars.')
 @commands('reg','regular')
 def regular(bot, trigger):
