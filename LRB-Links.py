@@ -10,7 +10,7 @@ http://willie.dftba.net/
 """
 
 from willie.tools import WillieMemory, Nick
-from willie.module import commands, rule, NOLIMIT, OP, require_privilege
+from willie.module import commands, rule, NOLIMIT
 
 def setup(bot):
     bot.memory['permitted_users'] = WillieMemory()
@@ -21,7 +21,7 @@ def link_detection(bot, trigger):
     Automatically detect links and act on it.
     """
     try:
-        if bot.privileges[trigger.sender][trigger.nick] >= OP:
+        if trigger.admin:
             #Channel ops can link just fine.
             return NOLIMIT
     except KeyError as e:
@@ -35,12 +35,13 @@ def link_detection(bot, trigger):
         bot.reply('Sharing knowledge is cool and all, but ask Tyrope before sending links, ok?')
         bot.say('.unban '+trigger.nick)
 
-@require_privilege(OP)
 @commands('allow', 'permit')
 def permit(bot, trigger):
     """
     Permit somebody to link.
     """
+    if not trigger.admin:
+        return NOLIMIT
     if trigger.group(3):
         if Nick(trigger.group(3)) in bot.memory['permitted_users']:
             bot.reply("%s already had permission." % trigger.group(3))

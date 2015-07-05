@@ -25,12 +25,13 @@ def configure(config):
             'Check out %(name)s on %(link)s! They were last playing %(game)s.')
     return chunk
 
-@require_privilege(OP, 'I only let mods do shoutouts.')
 @commands('so')
 def shoutout(bot, trigger):
     """
     Share a little bit of twitch love.
     """
+    if not trigger.admin:
+        return bot.reply('I only let mods do shoutouts.')
     if trigger.group(2):
         try:
             query_url = 'https://api.twitch.tv/kraken/channels/'+trigger.group(2)

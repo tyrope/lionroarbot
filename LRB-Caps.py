@@ -9,7 +9,7 @@ http://willie.dftba.net/
 """
 
 from collections import Counter
-from willie.module import rule, NOLIMIT, OP
+from willie.module import rule, NOLIMIT
 
 @rule('.*')
 def caps_detection(bot, trigger):
@@ -17,7 +17,7 @@ def caps_detection(bot, trigger):
     Automatically detect allcaps and act on it.
     """
     try:
-        if bot.privileges[trigger.sender][trigger.nick] >= OP:
+        if trigger.admin:
             return NOLIMIT
     except KeyError as e:
         # This potentially lets new-joiners shout for a little bit.
