@@ -64,6 +64,10 @@ def timed_message(bot):
     """
     Spit out one of the pre-configured messages every 15 minutes.
     """
+    if not 'index' in bot.memory['timer']:
+        # Because for some reason in setup() it doesn't trigger all the time?
+        bot.memory['timer']['index'] = 0
+
     if not bot.memory['timer']['enabled']:
         # Timed messages are disabled.
         return NOLIMIT
@@ -82,8 +86,6 @@ def timed_message(bot):
     # Move index up one, or loop.
     bot.memory['timer']['index'] += 1
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_timers').fetchone()[0]
-    bot.debug('timer', 'Index: %s, Count: %s' %
-        (bot.memory['timer']['index'], count), 'warning')
     if bot.memory['timer']['index'] >= int(count):
         bot.memory['timer']['index'] = 0
 
