@@ -8,15 +8,12 @@ These modules are built on top of the Sopel system.
 http://sopel.chat/
 """
 
-from sopel.config import ConfigurationError
 from sopel.tools import SopelMemory
-from sopel.module import commands, OP, require_privilege, event, rule, NOLIMIT
+from sopel.module import commands, event, rule
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_regulars '+
         '(ID INTEGER, nick STRING, channel STRING, PRIMARY KEY (ID))')
-
-    bot.memory['moderators'] = SopelMemory()
 
 @event('001')
 @rule('.*')
