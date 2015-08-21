@@ -4,13 +4,13 @@ LRB-Caps.py - LionRoarBot Shout-Out module.
 Copyright 2015, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
 from collections import Counter
-from willie import web
-from willie.module import commands, NOLIMIT, OP,require_privilege
+from sopel import web
+from sopel.module import commands, NOLIMIT, OP,require_privilege
 import json
 
 def configure(config):

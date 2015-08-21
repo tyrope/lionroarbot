@@ -4,19 +4,19 @@ LRB-Timer.py - LionRoarBot timed message module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.config import ConfigurationError
-from willie.tools import WillieMemory
-from willie.module import interval, commands, NOLIMIT
+from sopel.config import ConfigurationError
+from sopel.tools import SopelMemory
+from sopel.module import interval, commands, NOLIMIT
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_timers '+
         '(id STRING, message STRING, PRIMARY KEY (id))')
 
-    bot.memory['timer'] = WillieMemory()
+    bot.memory['timer'] = SopelMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
     if not bot.config.has_option('LRB','channel') \

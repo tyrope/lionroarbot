@@ -4,16 +4,16 @@ LRB-Raffle.py - LionRoarBot Raffle module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.tools import WillieMemory
-from willie.module import commands, NOLIMIT
+from sopel.tools import SopelMemory
+from sopel.module import commands, NOLIMIT
 import random, time
 
 def setup(bot):
-    bot.memory['raffle'] = WillieMemory()
+    bot.memory['raffle'] = SopelMemory()
     bot.memory['raffle']['open'] = False
     bot.memory['raffle']['people'] = list()
     bot.memory['raffle']['lastcall'] = 0
@@ -25,9 +25,9 @@ def open_raffle(bot, trigger):
 
     bot.memory['raffle']['people'] = list()
     bot.memory['raffle']['open'] = True
-    return bot.say("RAFFLE ACTIVATED! Type !raffle to enter.")
+    return bot.say("RAFFLE ACTIVATED! Type !roar to enter.")
 
-@commands('raffle')
+@commands('roar')
 def enter_raffle(bot, trigger):
     if not bot.memory['raffle']['open']:
         return bot.reply("There is no raffle open.")
@@ -51,8 +51,7 @@ def win_raffle(bot, trigger):
     random.shuffle(bot.memory['raffle']['people'])
     try:
         winner = bot.memory['raffle']['people'].pop()
-        bot.say("AND THE WINNER IS...")
-        return bot.say("%s! CONGRATULATIONS! Type in chat so we know you're here." % str(winner))
+        return bot.say("AND THE WINNER IS...  %s! CONGRATULATIONS! Type in chat so we know you're here." % str(winner))
     except IndexError:
         return bot.reply("We appear to have a problem... nobody entered.")
 

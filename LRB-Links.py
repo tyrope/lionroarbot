@@ -5,15 +5,15 @@ LRB-Links.py - LionRoarBot Link module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.tools import WillieMemory, Nick
-from willie.module import commands, rule, NOLIMIT
+from sopel.tools import SopelMemory, Nick
+from sopel.module import commands, rule, NOLIMIT
 
 def setup(bot):
-    bot.memory['permitted_users'] = WillieMemory()
+    bot.memory['permitted_users'] = SopelMemory()
 
 @rule('.*(?:\.[A-z]{2,5})+.*') # http://regexr.com/39583
 def link_detection(bot, trigger):

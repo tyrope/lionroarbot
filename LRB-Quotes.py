@@ -4,20 +4,20 @@ LRB-Quotes.py - LionRoarBot Quote module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.config import ConfigurationError
-from willie.tools import WillieMemory
-from willie.module import commands, NOLIMIT
+from sopel.config import ConfigurationError
+from sopel.tools import SopelMemory
+from sopel.module import commands, NOLIMIT
 import random, time
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_quotes '+
         '(id STRING, quote STRING, PRIMARY KEY (ID))')
 
-    bot.memory['quotes'] = WillieMemory()
+    bot.memory['quotes'] = SopelMemory()
     bot.memory['quotes']['lastused'] = 0
 
 @commands('quote')

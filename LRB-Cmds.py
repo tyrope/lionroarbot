@@ -4,12 +4,12 @@ LRB-Cmds.py - LionRoarBot Custom commands module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.config import ConfigurationError
-from willie.module import commands, NOLIMIT, rule, interval
+from sopel.config import ConfigurationError
+from sopel.module import commands, NOLIMIT, rule, interval
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_commands '+

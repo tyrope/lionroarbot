@@ -4,12 +4,12 @@ LRB-Caps.py - LionRoarBot ALLCAPS module.
 Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
-These modules are built on top of the Willie system.
-http://willie.dftba.net/
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
 from collections import Counter
-from willie.module import rule, NOLIMIT
+from sopel.module import rule, NOLIMIT
 
 @rule('.*')
 def caps_detection(bot, trigger):

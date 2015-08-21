@@ -1,13 +1,14 @@
 # coding=utf-8
 """
-LRB-debug.py - LRB Debugging Module - Based on Willie's Debug module.
+LRB-debug.py - LRB Debugging Module - Based on Sopel's Debug module.
 Copyright 2013, Dimitri "Tyrope" Molenaars, Tyrope.nl
 Licensed under the Eiffel Forum License 2.
 
-http://willie.dftba.net
+These modules are built on top of the Sopel system.
+http://sopel.chat/
 """
 
-from willie.module import commands, example, require_admin
+from sopel.module import commands, example, require_admin
 
 @require_admin
 @commands('privs')
