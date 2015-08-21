@@ -14,7 +14,7 @@ import json
 import datetime
 
 @commands('uptime')
-def shoutout(bot, trigger):
+def uptime(bot, trigger):
     """
     Report the stream uptime.
     """
