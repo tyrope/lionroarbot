@@ -40,7 +40,7 @@ def uptime(bot, trigger):
     h, r = divmod(uptime, 3600)
     m, s = divmod(r, 60)
 
-    if hours > 0:
+    if h > 0:
         return bot.reply('Stream has been online for %s:%s:%s' % (h,m,s))
     else:
         return bot.reply('Stream has been online for %s:%s' % (m,s))
