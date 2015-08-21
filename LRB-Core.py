@@ -10,7 +10,7 @@ http://sopel.chat/
 
 from sopel.config import ConfigurationError
 from sopel.tools import SopelMemory
-from sopel.module import commands, OP, require_privilege, event, rule
+from sopel.module import commands, OP, require_privilege, event, rule, NOLIMIT
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_regulars '+
