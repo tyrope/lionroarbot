@@ -24,16 +24,6 @@ def requestJoinsParts(bot, trigger):
     # Twitch turned off JOIN/PART by default, we have to ASK for it now...
     bot.write(["CAP REQ :twitch.tv/membership"])
 
-@event('JOIN')
-@rule('.*')
-def requestModList(bot, trigger):
-    if trigger.nick != bot.nick:
-        return NOLIMIT
-    return bot.say('/mods')
-
-#@rule('.*')
-#def getModList(bot, trigger):
-
 @commands('reg','regular')
 def regular(bot, trigger):
     if not trigger.admin:
