@@ -21,24 +21,28 @@ def uptime(bot, trigger):
     try:
         query_url = 'https://api.twitch.tv/kraken/streams/'+trigger.sender[1:]
         answer = web.get(query_url)
-        return bot.reply(answer)
-        data = json.loads(answer)
-
-        startTime = data['stream']['created_at']
-        f = '%Y-%m-%dT%H:%M:%SZ'
-
-        tStart = datetime.datetime.strptime(startTime, f)
-        now = datetime.datetime.utcnow()
-        uptime = (now - tStart).seconds
-
-        h, r = divmod(uptime, 3600)
-        m, s = divmod(r, 60)
-
-        if hours > 0:
-            return bot.reply('Stream has been online for %s:%s:%s' % (h,m,s))
-        else:
-            return bot.reply('Stream has been online for %s:%s' % (m,s))
-
     except:
         return bot.reply("The Twitch API be derp. :( #BlameTwitch")
+
+    try:
+        data = json.loads(answer)
+    except:
+        return bot.reply("The Twitch API returned an invalid object. :( #BlameTwitch")
+
+    startTime = data['stream']['created_at']
+    return bot.reply("Either the stream is offline, or the API hasn't updated yet.")
+
+    f = '%Y-%m-%dT%H:%M:%SZ'
+
+    tStart = datetime.datetime.strptime(startTime, f)
+    now = datetime.datetime.utcnow()
+    uptime = (now - tStart).seconds
+
+    h, r = divmod(uptime, 3600)
+    m, s = divmod(r, 60)
+
+    if hours > 0:
+        return bot.reply('Stream has been online for %s:%s:%s' % (h,m,s))
+    else:
+        return bot.reply('Stream has been online for %s:%s' % (m,s))
 
