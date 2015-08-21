@@ -12,8 +12,8 @@ from sopel.module import commands, NOLIMIT, rule, interval
 from sopel.config.types import StaticSection, ValidatedAttribute
 
 class CmdsSection(StaticSection):
-    cmds_folder = ValidatedAttribute('cmds_folder', string, default='/home/lionroarbot/cmdfiles/%s')
-    cmds_link = validatedAttribute('cmds_link', string, default='http://lrb.tyrope.nl/%s')
+    cmds_folder = ValidatedAttribute('cmds_folder', str, default='/home/lionroarbot/cmdfiles/%s')
+    cmds_link = validatedAttribute('cmds_link', str, default='http://lrb.tyrope.nl/%s')
 
 def configure(config):
     config.define_section('lrb', CmdsSection)

@@ -13,10 +13,10 @@ from sopel.module import interval, commands, NOLIMIT
 from sopel.config.types import StaticSection, ValidatedAttribute
 
 class TimerSection(StaticSection):
-    channel = ValidatedAttribute('channel', string, default='')
-    ctt_default = ValidatedAttribute('ctt_default', string, default='')
-    timers_folder = ValidatedAttribute('timers_folder', string, default='')
-    timers_link = ValidatedAttribute('timers_link', string, default='')
+    channel = ValidatedAttribute('channel', str, default='')
+    ctt_default = ValidatedAttribute('ctt_default', str, default='')
+    timers_folder = ValidatedAttribute('timers_folder', str, default='')
+    timers_link = ValidatedAttribute('timers_link', str, default='')
 
 def configure(config):
     config.define_section('lrb', TimerSection)
