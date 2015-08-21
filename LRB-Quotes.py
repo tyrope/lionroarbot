@@ -17,7 +17,8 @@ def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_quotes '+
         '(id STRING, quote STRING, PRIMARY KEY (ID))')
 
-    bot.memory['quotes'] = SopelMemory()
+    if not bot.memory.contains('quotes'):
+        bot.memory['quotes'] = SopelMemory()
     bot.memory['quotes']['lastused'] = 0
 
 @commands('quote')

@@ -8,28 +8,21 @@ These modules are built on top of the Sopel system.
 http://sopel.chat/
 """
 
-from sopel.config import ConfigurationError
 from sopel.module import commands, NOLIMIT, rule, interval
+from sopel.config.types import StaticSection, ValidatedAttribute
+
+class CmdsSection(StaticSection):
+    cmds_folder = ValidatedAttribute('cmds_folder', string, default='/home/lionroarbot/cmdfiles/%s')
+    cmds_link = validatedAttribute('cmds_link', string, default='http://lrb.tyrope.nl/%s')
+
+def configure(config):
+    config.define_section('lrb', CmdsSection)
+    config.lrb.configure_setting('cmds_folder', "The location where the bot will store the commands list.")
+    config.lrb.configure_setting('cmds_link', "The URL where people can see the commands list.")
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_commands '+
         '(cmd STRING, level STRING, response STRING, PRIMARY KEY (cmd))')
-
-    if not bot.config.has_option('LRB','cmds_folder') or not bot.config.has_option('LRB','cmds_link'):
-        raise ConfigurationError("LRB Cmds not configured.")
-
-def configure(config):
-    """
-| [LRB] | example | purpose |
-| -------- | ------- | ------- |
-| cmds_folder | /home/lionroarbot/cmdfiles/%s | The location where the bot will store the commands list. |
-| cmds_link | http://lrb.tyrope.nl/%s | The URL where people can see the commands list. |
-"""
-    chunk = ''
-    if config.option('Configuring LRB Commands module', False):
-        config.interactive_add('LRB', 'cmds_folder', 'cmds_folder', '')
-        config.interactive_add('LRB', 'cmds_link', 'cmds_link', '')
-    return chunk
 
 @interval(3600)
 def update_cmds(bot):

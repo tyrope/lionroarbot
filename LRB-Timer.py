@@ -8,9 +8,26 @@ These modules are built on top of the Sopel system.
 http://sopel.chat/
 """
 
-from sopel.config import ConfigurationError
 from sopel.tools import SopelMemory
 from sopel.module import interval, commands, NOLIMIT
+from sopel.config.types import StaticSection, ValidatedAttribute
+
+class TimerSection(StaticSection):
+    channel = ValidatedAttribute('channel', string, default='')
+    ctt_default = ValidatedAttribute('ctt_default', string, default='')
+    timers_folder = ValidatedAttribute('timers_folder', string, default='')
+    timers_link = ValidatedAttribute('timers_link', string, default='')
+
+def configure(config):
+    config.define_section('lrb', TimerSection)
+    config.lrb.configure_setting('channel',
+                                 "The channel to spam these messages in.")
+    config.lrb.configure_setting('ctt_default',
+                                 "The defailt click to tweet URL ID.")
+    config.lrb.configure_setting('timers_folder',
+                                 "The location where the bot will store the timers list.")
+    config.lrb.configure_setting('timers_link',
+                                 "The URL where people can see the timers list.")
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_timers '+
@@ -19,28 +36,6 @@ def setup(bot):
     bot.memory['timer'] = SopelMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
-    if not bot.config.has_option('LRB','channel') \
-    or not bot.config.has_option('LRB','ctt_default') \
-    or not bot.config.has_option('LRB','timers_folder') \
-    or not bot.config.has_option('LRB','timers_link'):
-        raise ConfigurationError("LRB Timer Module not configured.")
-
-def configure(config):
-    """
-| [LRB] | example | purpose |
-| -------- | ------- | ------- |
-| channel | #LionRoarBot | The channel to spam these messages in. |
-| ctt_default | kiRU4 | The default click to tweet URL ID. |
-| timers_folder | /home/lionroarbot/timerfiles/%s | The location where the bot will store the timers list. |
-| timers_link | http://lrb.tyrope.nl/%s | The URL where people can see the timers list. |
-"""
-    chunk = ''
-    if config.option('Configuring LRB Timer module', False):
-        config.interactive_add('LRB', 'channel', 'channel', '')
-        config.interactive_add('LRB', 'ctt_default', 'ctt-default', '')
-        config.interactive_add('LRB', 'timers_folder', 'timers_folder', '')
-        config.interactive_add('LRB', 'timers_link', 'timers_link', '')
-    return chunk
 
 @interval(3600)
 def update_timers(bot):
