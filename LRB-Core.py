@@ -29,7 +29,7 @@ def requestJoinsParts(bot, trigger):
 def requestModList(bot, trigger):
     if trigger.nick != bot.nick:
         return NOLIMIT
-    return bot.say('.mods')
+    return bot.say('/mods')
 
 #@rule('.*')
 #def getModList(bot, trigger):
