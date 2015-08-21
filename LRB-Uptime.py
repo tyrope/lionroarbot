@@ -20,7 +20,9 @@ def uptime(bot, trigger):
     """
     try:
         query_url = 'https://api.twitch.tv/kraken/streams/'+trigger.channel[1:]
+        print query_url
         answer = web.get(query_url)
+        print answer
         data = json.loads(answer)
 
         startTime = data['stream']['created_at']
