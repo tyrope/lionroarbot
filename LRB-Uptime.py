@@ -29,7 +29,10 @@ def uptime(bot, trigger):
     except:
         return bot.reply("The Twitch API returned an invalid object. :( #BlameTwitch")
 
-    startTime = data['stream']['created_at']
+    if data['stream'] != None:
+        startTime = data['stream']['created_at']
+    else:
+        return bot.reply("Stream offline. :(")
 
     f = '%Y-%m-%dT%H:%M:%SZ'
 
