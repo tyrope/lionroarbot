@@ -44,7 +44,7 @@ def addquote(bot, trigger):
     # Save the quote to the database
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     bot.db.execute('INSERT INTO lrb_quotes (id, quote) VALUES (?, ?)',
-        (count, trigger.group(2).replace('\'', '\'\'')))
+        (count, trigger.group(2)))
 
     if bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
         (count,)).fetchone():
