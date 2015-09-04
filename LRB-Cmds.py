@@ -30,7 +30,7 @@ def update_cmds(bot):
     cmds = list()
     for cmd in bot.db.execute('SELECT cmd, level, response FROM lrb_commands'):
         # ALL THE COMMANDS!
-        cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), cmd[1], cmd[2])).encode('utf-8'))
+        cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), cmd[1], cmd[2].replace('\'\'','\''))).encode('utf-8'))
 
     # Open the file (empty it)
     listfile = open(bot.config.LRB.cmds_folder + bot.nick.lower() + '-commands', 'w')
@@ -56,13 +56,13 @@ def command(bot, trigger):
         # Can the user actually trigger this command?
         if lvl == 'all':
             # Everybody can use this.
-            bot.reply(reply)
+            bot.reply(reply.replace('\'\'','\''))
         elif lvl == 'mod' and trigger.admin:
             # Mods canuse this, This user is a mod, twitch admin or channel owner.
-            bot.reply(reply)
+            bot.reply(reply.replace('\'\'','\''))
         elif lvl == 'owner' and trigger.sender[1:].lower() == trigger.nick.lower():
             # Only owner can use this, and this is the channel owner.
-            bot.reply(reply)
+            bot.reply(reply.replace('\'\'','\''))
         else:
             # Access Denied.
             return NOLIMIT
