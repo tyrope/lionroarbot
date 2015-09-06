@@ -29,12 +29,16 @@ def quote(bot, trigger):
         bot.memory['quotes']['lastused'] = int(time.time())
 
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
-    ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
+    ret = bot.db.execute('SELECT quote, id FROM lrb_quotes WHERE id=?',
         (str(random.randint(0, count)),))
     try:
-        msg = ret.fetchone()[0]
-        bot.say(msg)
-    except TypeError as e:
+        msg = ret.fetchone()
+        if msg[0].len < 1:
+            bot.say("Tried to send quote %s, but it's empty." % msg[1])
+        else:
+            bot.say(msg[0])
+    except TypeError as e: #DEBUG LINE BELOW
+        bot.debug('Quote', "Mods, please inform Ty of the following: {0}: {1}".format(e.errno, e.strerror)
         return quote(bot, trigger)
 
 @commands('addquote')
