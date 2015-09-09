@@ -13,7 +13,9 @@ from sopel.module import rule, NOLIMIT
 try:
     from sopel.modules.LRB_Core import isReg
 except ImportError:
-    pass
+    print "Error loading Core module. Regular detection will not function."
+
+core_complained = False
 
 @rule('.*')
 def caps_detection(bot, trigger):
@@ -29,16 +31,13 @@ def caps_detection(bot, trigger):
         # #blametwitch
         return NOLIMIT
 
-    try:
-        if(isReg(trigger.sender, trigger.nick)):
-            #This person is a regular.
-            return NOLIMIT
-    except:
-        bot.say('Mods, the core module isn\'t loaded...')
-
     if len(trigger.group(0)) < 10:
         # This message was very short, could be something like "OMG",
         # let's not make a fuss about it.
+        return NOLIMIT
+
+    if(isReg(trigger.sender, trigger.nick)):
+        #This person is a regular.
         return NOLIMIT
 
     counter = Counter(trigger.group(0))
