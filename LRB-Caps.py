@@ -11,7 +11,7 @@ http://sopel.chat/
 from collections import Counter
 from sopel.module import rule, NOLIMIT
 try:
-    from sopel.modules import LRB-Core
+    from sopel.modulesLRB-Core import isReg
     core_available = True
 except ImportError:
     core_available = False
@@ -32,7 +32,7 @@ def caps_detection(bot, trigger):
 
     if core_available:
         #We can check for regulars.
-        if(core.isReg(trigger.sender, trigger.nick)):
+        if(isReg(trigger.sender, trigger.nick)):
             #This person is a regular.
             return NOLIMIT
 
