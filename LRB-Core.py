@@ -43,3 +43,9 @@ def regular(bot, trigger):
     else:
         return bot.reply("Unknown parameter. Valid commands: !reg add, !reg del")
 
+def isReg(channel, user):
+    q = 'SELECT COUNT(*) FROM lrb_regulars WHERE nick=? AND channel=?'
+    if bot.db.execute(q, (trigger.nick, trigger.sender)).fetchone()[0] > 0:
+        return True
+    else
+        return False
