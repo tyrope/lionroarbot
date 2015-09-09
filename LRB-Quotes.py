@@ -33,7 +33,7 @@ def quote(bot, trigger):
         (str(random.randint(0, count)),))
     try:
         msg = ret.fetchone()
-        if msg[0].len < 1:
+        if len(msg[0]) < 1:
             bot.say("Tried to send quote %s, but it's empty." % msg[1])
         else:
             bot.say(msg[0])
