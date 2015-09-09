@@ -11,7 +11,7 @@ http://sopel.chat/
 from collections import Counter
 from sopel.module import rule, NOLIMIT
 try:
-    from sopel.modules import LRB-Core as core
+    import sopel.modules.LRB-Core as core
     core_available = True
 except ImportError:
     core_available = False
