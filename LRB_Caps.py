@@ -11,7 +11,7 @@ http://sopel.chat/
 from collections import Counter
 from sopel.module import rule, NOLIMIT
 try:
-    from sopel.modules.LRB_Core import isReg
+    from LRB_Core import isReg
 except ImportError as e:
     print "Error loading Core module. Regular detection will not function."
     print e
