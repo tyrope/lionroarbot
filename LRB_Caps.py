@@ -15,6 +15,7 @@ try:
     core_available = True
 except ImportError:
     core_available = False
+    core_complained = False
 
 @rule('.*')
 def caps_detection(bot, trigger):
@@ -35,6 +36,9 @@ def caps_detection(bot, trigger):
         if(isReg(trigger.sender, trigger.nick)):
             #This person is a regular.
             return NOLIMIT
+    elif not core_complained:
+        bot.say('Mods, the core module isn\'t loaded...')
+        core_complained = True
 
     if len(trigger.group(0)) < 10:
         # This message was very short, could be something like "OMG",
