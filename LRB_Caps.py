@@ -12,7 +12,7 @@ from collections import Counter
 from sopel.module import rule, NOLIMIT
 try:
     from sopel.modules.LRB_Core import isReg
-except ImportError:
+except ImportError as e:
     print "Error loading Core module. Regular detection will not function."
     print sys.exc_info()[0]
     def isReg(chan, nick): return False # placeholder
