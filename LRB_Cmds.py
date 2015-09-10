@@ -12,8 +12,8 @@ from sopel.module import commands, NOLIMIT, rule, interval
 from sopel.config.types import StaticSection, ValidatedAttribute
 
 class CmdsSection(StaticSection):
-    cmds_folder = ValidatedAttribute('cmds_folder', str, default='/home/lionroarbot/cmdfiles/%s')
-    cmds_link = ValidatedAttribute('cmds_link', str, default='http://lrb.tyrope.nl/%s')
+    cmds_folder = ValidatedAttribute('cmds_folder', str, default='')
+    cmds_link = ValidatedAttribute('cmds_link', str, default='')
 
 def configure(config):
     config.define_section('lrb', CmdsSection)
@@ -58,7 +58,7 @@ def command(bot, trigger):
             # Everybody can use this.
             bot.reply(reply.replace('\'\'','\''))
         elif lvl == 'mod' and trigger.admin:
-            # Mods canuse this, This user is a mod, twitch admin or channel owner.
+            # Mods can use this, This user is a mod or channel owner.
             bot.reply(reply.replace('\'\'','\''))
         elif lvl == 'owner' and trigger.sender[1:].lower() == trigger.nick.lower():
             # Only owner can use this, and this is the channel owner.
