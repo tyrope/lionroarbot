@@ -45,7 +45,7 @@ def regular(bot, trigger):
 
 def isReg(bot, channel, user):
     q = 'SELECT COUNT(*) FROM lrb_regulars WHERE nick=? AND channel=?'
-    if bot.db.execute(q, (trigger.nick, trigger.sender)).fetchone()[0] > 0:
+    if bot.db.execute(q, (user, channel)).fetchone()[0] > 0:
         return True
     else:
         return False
