@@ -28,7 +28,7 @@ def quote(bot, trigger):
 
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
     ID = str(random.randint(0, count))
-    ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
+    ret = bot.db.execute('SELECT quote FROM lrb_quotes LIMIT ?, 1',
         (ID,))
     try:
         msg = ret.fetchone()
