@@ -38,7 +38,7 @@ def quote(bot, trigger):
         else:
             bot.say(msg[0])
     except TypeError as e: #DEBUG LINE BELOW
-        bot.debug('Quote', "Uh oh, I encountered an error, please inform Ty (include the timestamp)")
+        bot.debug('Quote', "Uh oh, I encountered an error, please inform Ty (include the timestamp)",'always')
         print e
         return quote(bot, trigger)
 
