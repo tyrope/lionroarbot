@@ -25,22 +25,20 @@ def setup(bot):
 def quote(bot, trigger):
     if bot.memory['quotes']['lastused'] > int(time.time()) - 60:
         return NOLIMIT
-    else:
-        bot.memory['quotes']['lastused'] = int(time.time())
 
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
-    ret = bot.db.execute('SELECT quote, id FROM lrb_quotes WHERE id=?',
-        (str(random.randint(0, count)),))
+    ID = str(random.randint(0, count))
+    ret = bot.db.execute('SELECT quote FROM lrb_quotes WHERE id=?',
+        (ID,))
     try:
         msg = ret.fetchone()
         if len(msg[0]) < 1:
-            bot.say("Tried to send quote %s, but it's empty." % msg[1])
+            bot.say("Tried to send quote %s, but it's empty." % ID)
         else:
             bot.say(msg[0])
-    except TypeError as e: #DEBUG LINE BELOW
-        bot.say("Uh oh, I encountered an error, please inform Ty (include the timestamp)")
-        print e
-        return quote(bot, trigger)
+            bot.memory['quotes']['lastused'] = int(time.time())
+    except TypeError as e:
+        bot.say("Tried to send quote %s, but it doesn't exist." % ID)
 
 @commands('addquote')
 def addquote(bot, trigger):
