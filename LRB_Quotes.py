@@ -38,7 +38,8 @@ def quote(bot, trigger):
         else:
             bot.say(msg[0])
     except TypeError as e: #DEBUG LINE BELOW
-        bot.debug('Quote', "Mods, please inform Ty of the following:", sys.exc_info()[0])
+        bot.debug('Quote', "Uh oh, I encountered an error, please inform Ty (include the timestamp)")
+        print e
         return quote(bot, trigger)
 
 @commands('addquote')
