@@ -38,7 +38,7 @@ def caps_detection(bot, trigger):
         # let's not make a fuss about it.
         return NOLIMIT
 
-    if isReg(trigger.sender, trigger.nick):
+    if isReg(bot, trigger.sender, trigger.nick):
         #This person is a regular.
         return NOLIMIT
 
