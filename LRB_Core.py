@@ -35,11 +35,17 @@ def regular(bot, trigger):
     target = trigger.group(4).lower()
 
     if cmd == 'add':
-        bot.db.execute('INSERT INTO lrb_regulars (nick, channel) VALUES (?, ?)', (target,trigger.sender))
-        return bot.reply('%s added to regulars list.' % (target,))
+        if isReg(bot, trigger.sender, target):
+            return ('%s is already a regular here.' % (target,))
+        else:
+            bot.db.execute('INSERT INTO lrb_regulars (nick, channel) VALUES (?, ?)', (target,trigger.sender))
+            return bot.reply('%s added to regulars list.' % (target,))
     elif cmd == 'del':
-        bot.db.execute('DELETE FROM lrb_regulars WHERE nick=? AND channel=?', (target,trigger.sender))
-        return bot.reply('%s removed from regulars list.' % (target,))
+        if not isReg(bot, trigger.sender, target):
+            return bot.reply('%s is not a regular here.' % (target,))
+        else:
+            bot.db.execute('DELETE FROM lrb_regulars WHERE nick=? AND channel=?', (target,trigger.sender))
+            return bot.reply('%s removed from regulars list.' % (target,))
     else:
         return bot.reply("Unknown parameter. Valid commands: !reg add, !reg del")
 
