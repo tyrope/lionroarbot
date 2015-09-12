@@ -72,7 +72,7 @@ def timed_message(bot):
         str(bot.memory['timer']['index']))
     msg = ret.fetchone()[0]
 
-    # CTT thing.
+    # Click to tweet
     if 'http://ctt.ec/' in msg:
         if 'ctt' not in bot.memory['timer']:
             bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
