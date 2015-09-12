@@ -9,7 +9,7 @@ These modules are built on top of the Sopel system.
 http://sopel.chat/
 """
 
-from sopel.tools import SopelMemory, Nick
+from sopel.tools import SopelMemory, Identifier
 from sopel.module import commands, rule, NOLIMIT
 try:
     from LRB_Core import isReg
@@ -50,10 +50,10 @@ def permit(bot, trigger):
     if not trigger.admin:
         return NOLIMIT
     if trigger.group(3):
-        if Nick(trigger.group(3)) in bot.memory['permitted_users']:
+        if Identifier(trigger.group(3)) in bot.memory['permitted_users']:
             bot.reply("%s already had permission." % trigger.group(3))
         else:
-            bot.memory['permitted_users'][Nick(trigger.group(3))] =  True
+            bot.memory['permitted_users'][Identifier(trigger.group(3))] =  True
             bot.reply('%s has permission to post 1 message with links.' % trigger.group(3))
     else:
         bot.reply("Who do you want me to give permission?")
