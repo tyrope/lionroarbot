@@ -14,8 +14,7 @@ try:
     from LRB_Core import isReg
 except ImportError as e:
     print "Error loading Core module. Regular detection will not function."
-    print e
-    def isReg(chan, nick): return False # placeholder
+    def isReg(bot, chan, nick): return False # placeholder
 
 core_complained = False
 
