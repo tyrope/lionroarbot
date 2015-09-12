@@ -11,11 +11,16 @@ http://sopel.chat/
 
 from sopel.tools import SopelMemory, Nick
 from sopel.module import commands, rule, NOLIMIT
+try:
+    from LRB_Core import isReg
+except ImportError as e:
+    print "Error loading Core module. Regular detection will not function."
+    def isReg(bot, chan, nick): return False # placeholder
 
 def setup(bot):
     bot.memory['permitted_users'] = SopelMemory()
 
-@rule('.*(?:\.[A-z]{2,5})+.*') # http://regexr.com/39583
+@rule('.*(\.[A-z]{2}|com|info|net|org).*') # http://regexr.com/3bp6d
 def link_detection(bot, trigger):
     """
     Automatically detect links and act on it.
@@ -30,9 +35,11 @@ def link_detection(bot, trigger):
     if trigger.nick in bot.memory['permitted_users']:
         bot.memory['permitted_users'].pop(trigger.nick, None)
         return NOLIMIT
+    elif isReg(bot, trigger.sender, trigger.nick):
+        return NOLIMIT # Regulars can link just fine.
     else:
         bot.say('.ban '+trigger.nick)
-        bot.reply('Sharing knowledge is cool and all, but ask Tyrope before sending links, ok?')
+        bot.reply('Sharing knowledge is cool and all, but ask the mods before sending links, ok?')
         bot.say('.unban '+trigger.nick)
 
 @commands('allow', 'permit')
@@ -47,7 +54,7 @@ def permit(bot, trigger):
             bot.reply("%s already had permission." % trigger.group(3))
         else:
             bot.memory['permitted_users'][Nick(trigger.group(3))] =  True
-            bot.reply('%s has permission to post a link.' % trigger.group(3))
+            bot.reply('%s has permission to post 1 message with links.' % trigger.group(3))
     else:
         bot.reply("Who do you want me to give permission?")
 
