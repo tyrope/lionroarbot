@@ -36,7 +36,7 @@ def regular(bot, trigger):
 
     if cmd == 'add':
         if isReg(bot, trigger.sender, target):
-            return ('%s is already a regular here.' % (target,))
+            return bot.reply('%s is already a regular here.' % (target,))
         else:
             bot.db.execute('INSERT INTO lrb_regulars (nick, channel) VALUES (?, ?)', (target,trigger.sender))
             return bot.reply('%s added to regulars list.' % (target,))
