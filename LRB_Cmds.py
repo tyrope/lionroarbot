@@ -28,7 +28,7 @@ def setup(bot):
 def update_cmds(bot):
 
     cmds = list()
-    for cmd in bot.db.execute('SELECT cmd, level, response FROM lrb_commands'):
+    for cmd in bot.db.execute('SELECT cmd, level, response FROM lrb_commands ORDER BY cmd ASC'):
         # ALL THE COMMANDS!
         cmds.append(('%s - Level: %s - Response: %s\r\n' % (str(cmd[0]), cmd[1], cmd[2].replace('\'\'','\''))).encode('utf-8'))
 
@@ -51,18 +51,18 @@ def command(bot, trigger):
     else:
         # Command found.
         lvl = ret[0]
-        reply = ret[1]
+        reply = ret[1].replace('\'\'', '\'')
 
         # Can the user actually trigger this command?
         if lvl == 'all':
             # Everybody can use this.
-            bot.reply(reply.replace('\'\'','\''))
+            bot.reply(reply)
         elif lvl == 'mod' and trigger.admin:
             # Mods can use this, This user is a mod or channel owner.
-            bot.reply(reply.replace('\'\'','\''))
+            bot.reply(reply)
         elif lvl == 'owner' and trigger.sender[1:].lower() == trigger.nick.lower():
             # Only owner can use this, and this is the channel owner.
-            bot.reply(reply.replace('\'\'','\''))
+            bot.reply(reply)
         else:
             # Access Denied.
             return NOLIMIT
@@ -71,21 +71,21 @@ def command(bot, trigger):
 def addcom(bot, trigger):
     if not trigger.admin:
         return bot.reply('Only moderators can add commands.')
-    try:
-        if bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd =?',
-            (trigger.group(3).lower(),)).fetchone():
-            return bot.reply("That command already exists, try the editcom command")
-        else:
-            cmd = trigger.group(3).lower()
-    except IndexError as e:
+
+    if trigger.group(3) == None:
         return bot.reply("Add what command?")
 
-    try:
+    cmd = trigger.group(3).lower()
+    if bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd =?',
+        (cmd,)).fetchone():
+        return bot.reply("That command already exists, try the editcom command")
+
+    if trigger.group(4) != None:
         if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
             return bot.reply("What access level? (all, mod, owner)")
         else:
             lvl = trigger.group(4).lower()
-    except IndexError as e:
+    else:
         return bot.reply("You forgot access level & response.")
 
     reply = trigger.group(0)[len(cmd)+len(lvl)+10:] # 10 = !addcom + 3 spaces
@@ -119,21 +119,22 @@ def delcom(bot, trigger):
 def editcom(bot, trigger):
     if not trigger.admin:
         return bot.reply('Only moderators can edit commands.')
-    try:
-        cmd = trigger.group(3).lower()
-        ret = bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd=?',
-            (cmd,)).fetchone()
-        if not ret:
-            return bot.reply("That command doesn't exists, try the addcom command")
-    except IndexError as e:
+
+    if trigger.group(3) == None:
         return bot.reply("Edit what command?")
 
-    try:
+    cmd = trigger.group(3).lower()
+    ret = bot.db.execute('SELECT cmd FROM lrb_commands WHERE cmd=?',
+        (cmd,)).fetchone()
+    if not ret:
+        return bot.reply("That command doesn't exists, try the addcom command")
+
+    if trigger.group(4) != None:
         if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
             return bot.reply("What access level? (all, mod, owner)")
         else:
             lvl = trigger.group(4).lower()
-    except IndexError as e:
+    else:
         return bot.reply("You forgot access level & response.")
 
     reply = trigger.group(0)[len(cmd)+len(lvl)+11:] # 11 = !editcom + 3 spaces
