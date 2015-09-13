@@ -23,31 +23,54 @@ def requestJoinsParts(bot, trigger):
 
 @commands('reg','regular')
 def regular(bot, trigger):
-    if not trigger.admin:
-        return bot.reply('Only moderators can alter regulars.')
-
     if not trigger.group(3):
-        return bot.reply("Do what? (add/del)")
-    if not trigger.group(4):
-        return bot.reply("To who?")
-
+        return bot.reply("Do what? (add/check/del/list)")
     cmd = trigger.group(3).lower()
-    target = trigger.group(4).lower()
 
-    if cmd == 'add':
+
+    if cmd in ('add', 'del'):
+        if not trigger.group(4):
+            return bot.reply("To who?")
+        else:
+            target = trigger.group(4).lower()
+
+    if cmd == 'add': #Adding regulars
+        if not trigger.admin:
+            bot.reply('Only moderators can alter regulars.')
+
         if isReg(bot, trigger.sender, target):
             return bot.reply('%s is already a regular here.' % (target,))
         else:
             bot.db.execute('INSERT INTO lrb_regulars (nick, channel) VALUES (?, ?)', (target,trigger.sender))
             return bot.reply('%s added to regulars list.' % (target,))
-    elif cmd == 'del':
+    elif cmd == 'del': #Removing regulars
+        if not trigger.admin:
+            bot.reply('Only moderators can alter regulars.')
+
         if not isReg(bot, trigger.sender, target):
             return bot.reply('%s is not a regular here.' % (target,))
         else:
             bot.db.execute('DELETE FROM lrb_regulars WHERE nick=? AND channel=?', (target,trigger.sender))
             return bot.reply('%s removed from regulars list.' % (target,))
+    elif cmd == 'check': #Check if you're a regular.
+        if trigger.admin:
+            return bot.reply('You\'re a moderator, that outranks regular.')
+
+        if isReg(bot, trigger.sender, trigger.nick):
+            return bot.reply('You\'re a regular.')
+        else:
+            return bot.reply('You are not a regular.')
+
+    elif cmd == 'list': #Listing regulars
+        # TODO maybe, owner only?
+        q = 'SELECT nick FROM lrb_regulars WHERE channel=?'
+        regulars = ''
+        for reg in bot.db.execute(q, (trigger.sender,))
+            regulars += reg + ', '
+        regulars = regulars[:-2] #remove the last ', '
+        return bot.reply('Channel regulars: '+regulars)
     else:
-        return bot.reply("Unknown parameter. Valid commands: !reg add, !reg del")
+        return bot.reply("Unknown parameter. Valid commands: !reg add, !reg del, !reg list")
 
 def isReg(bot, channel, user):
     q = 'SELECT COUNT(*) FROM lrb_regulars WHERE nick=? AND channel=?'
