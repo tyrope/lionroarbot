@@ -20,7 +20,7 @@ except ImportError as e:
 def setup(bot):
     bot.memory['permitted_users'] = SopelMemory()
 
-@rule('.*(\.[A-z]{2}|com|info|net|org).*') # http://regexr.com/3bp6d
+@rule('.*\.([A-z]{2}|com|info|net|org).*') # http://regexr.com/3bp6d
 def link_detection(bot, trigger):
     """
     Automatically detect links and act on it.
