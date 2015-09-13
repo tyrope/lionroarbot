@@ -65,7 +65,7 @@ def regular(bot, trigger):
         # TODO maybe, owner only?
         q = 'SELECT nick FROM lrb_regulars WHERE channel=?'
         regulars = ''
-        for reg in bot.db.execute(q, (trigger.sender,))
+        for reg in bot.db.execute(q, (trigger.sender,)):
             regulars += reg + ', '
         regulars = regulars[:-2] #remove the last ', '
         return bot.reply('Channel regulars: '+regulars)
