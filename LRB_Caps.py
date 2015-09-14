@@ -1,7 +1,7 @@
 #coding: utf8
 """
 LRB-Caps.py - LionRoarBot ALLCAPS module.
-Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
+Copyright 2014-2015, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
 These modules are built on top of the Sopel system.
@@ -15,8 +15,6 @@ try:
 except ImportError as e:
     print "Error loading Core module. Regular detection will not function."
     def isReg(bot, chan, nick): return False # placeholder
-
-core_complained = False
 
 @rule('.*')
 def caps_detection(bot, trigger):

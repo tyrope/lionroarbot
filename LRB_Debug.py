@@ -1,7 +1,7 @@
 # coding=utf-8
 """
 LRB-debug.py - LRB Debugging Module - Based on Sopel's Debug module.
-Copyright 2013, Dimitri "Tyrope" Molenaars, Tyrope.nl
+Copyright 2013-2015, Dimitri "Tyrope" Molenaars, Tyrope.nl
 Licensed under the Eiffel Forum License 2.
 
 These modules are built on top of the Sopel system.

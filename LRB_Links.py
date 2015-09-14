@@ -2,7 +2,7 @@
 
 """
 LRB-Links.py - LionRoarBot Link module.
-Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
+Copyright 2014-2015, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
 These modules are built on top of the Sopel system.
