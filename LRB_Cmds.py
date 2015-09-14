@@ -1,7 +1,7 @@
 #coding: utf8
 """
 LRB-Cmds.py - LionRoarBot Custom commands module.
-Copyright 2014, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
+Copyright 2014-2015, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
 These modules are built on top of the Sopel system.
@@ -10,6 +10,11 @@ http://sopel.chat/
 
 from sopel.module import commands, NOLIMIT, rule, interval
 from sopel.config.types import StaticSection, ValidatedAttribute
+try:
+    from LRB_Core import isReg
+except ImportError as e:
+    print "Error loading Core module. Regular detection will not function."
+    def isReg(bot, chan, nick): return False # placeholder
 
 class CmdsSection(StaticSection):
     cmds_folder = ValidatedAttribute('cmds_folder', str, default='')
@@ -26,7 +31,6 @@ def setup(bot):
 
 @interval(3600)
 def update_cmds(bot):
-
     cmds = list()
     for cmd in bot.db.execute('SELECT cmd, level, response FROM lrb_commands ORDER BY cmd ASC'):
         # ALL THE COMMANDS!
@@ -57,6 +61,8 @@ def command(bot, trigger):
         if lvl == 'all':
             # Everybody can use this.
             bot.reply(reply)
+        elif lvl = 'reg' and (isReg(bot, trigger.sender, trigger.nick) or trigger.admin):
+            bot.reply(reply)
         elif lvl == 'mod' and trigger.admin:
             # Mods can use this, This user is a mod or channel owner.
             bot.reply(reply)
@@ -81,8 +87,8 @@ def addcom(bot, trigger):
         return bot.reply("That command already exists, try the editcom command")
 
     if trigger.group(4) != None:
-        if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
-            return bot.reply("What access level? (all, mod, owner)")
+        if trigger.group(4).lower() not in ('all', 'reg', 'mod', 'owner'):
+            return bot.reply("What access level? (all, reg, mod, owner)")
         else:
             lvl = trigger.group(4).lower()
     else:
@@ -130,8 +136,8 @@ def editcom(bot, trigger):
         return bot.reply("That command doesn't exists, try the addcom command")
 
     if trigger.group(4) != None:
-        if trigger.group(4).lower() not in ('all', 'mod', 'owner'):
-            return bot.reply("What access level? (all, mod, owner)")
+        if trigger.group(4).lower() not in ('all', 'reg', 'mod', 'owner'):
+            return bot.reply("What access level? (all, reg, mod, owner)")
         else:
             lvl = trigger.group(4).lower()
     else:
