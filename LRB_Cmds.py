@@ -61,7 +61,7 @@ def command(bot, trigger):
         if lvl == 'all':
             # Everybody can use this.
             bot.reply(reply)
-        elif lvl = 'reg' and (isReg(bot, trigger.sender, trigger.nick) or trigger.admin):
+        elif lvl == 'reg' and (isReg(bot, trigger.sender, trigger.nick) or trigger.admin):
             bot.reply(reply)
         elif lvl == 'mod' and trigger.admin:
             # Mods can use this, This user is a mod or channel owner.
