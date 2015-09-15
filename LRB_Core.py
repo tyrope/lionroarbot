@@ -62,6 +62,8 @@ def regular(bot, trigger):
             return bot.reply('You are not a regular.')
 
     elif cmd == 'list': #Listing regulars
+        if not trigger.admin:
+            return NOLIMIT
         regulars = ''
         for reg in bot.db.execute('SELECT nick FROM lrb_regulars WHERE channel=? ORDER BY nick ASC', (trigger.sender,)):
             regulars += reg + ', '
