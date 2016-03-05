@@ -23,7 +23,7 @@ def setup(bot):
 
 @commands('quote')
 def quote(bot, trigger):
-    if bot.memory['quotes']['lastused'] > int(time.time()) - 60:
+    if bot.memory['quotes']['lastused'] > int(time.time()) - 30:
         return NOLIMIT
 
     count = bot.db.execute('SELECT COUNT(*) FROM lrb_quotes').fetchone()[0]
