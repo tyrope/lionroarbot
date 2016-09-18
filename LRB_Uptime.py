@@ -31,8 +31,7 @@ def uptime(bot, trigger):
     Report the stream uptime.
     """
     try:
-        query_url = 'https://api.twitch.tv/kraken/streams/{0}'+
-                    '?api_version=3&client_id={1}'
+        query_url = 'https://api.twitch.tv/kraken/streams/{0}?api_version=3&client_id={1}'
         answer = web.get(query_url.format(trigger.sender[1:],
                                           bot.config.LRB.api_key))
     except:

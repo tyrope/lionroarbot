@@ -37,8 +37,7 @@ def shoutout(bot, trigger):
         return bot.reply('I only let mods do shoutouts.')
     if trigger.group(2):
         try:
-            query_url = 'https://api.twitch.tv/kraken/channels/{0}'+
-                        '?api_version=3&client_id={1}'
+            query_url = 'https://api.twitch.tv/kraken/channels/{0}?api_version=3&client_id={1}'
             answer = web.get(query_url.format(trigger.group(2),
                                               bot.config.LRB.api_key))
         except:
