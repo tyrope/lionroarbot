@@ -13,16 +13,30 @@ from sopel.module import commands, NOLIMIT
 import json
 import datetime
 
+def configure(config):
+    """
+| [LRB] | example | purpose |
+| -------- | ------- | ------- |
+| api_key | 0123456789abcdefghijklmnopqrstu | Twitch API Client-ID.
+"""
+    chunk = ''
+    if config.option('Configuring LRB Uptime module', False):
+        config.interactive_add('LRB', 'api_key', 'api_key',
+            '0123456789abcdefghijklmnopqrstu')
+    return chunk
+
 @commands('uptime')
 def uptime(bot, trigger):
     """
     Report the stream uptime.
     """
     try:
-        query_url = 'https://api.twitch.tv/kraken/streams/'+trigger.sender[1:]
-        answer = web.get(query_url)
+        query_url = 'https://api.twitch.tv/kraken/streams/{0}'+
+                    '?api_version=3&client_id={1}'
+        answer = web.get(query_url.format(trigger.sender[1:],
+                                          bot.config.LRB.api_key))
     except:
-        return bot.reply("The Twitch API be derp. :( #BlameTwitch")
+        return bot.reply("Couldn't contact the Twitch API servers. :( #BlameTwitch")
 
     try:
         data = json.loads(answer)

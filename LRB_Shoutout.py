@@ -18,11 +18,14 @@ def configure(config):
 | [LRB] | example | purpose |
 | -------- | ------- | ------- |
 | shoutmsg | 'Check out %(name)s on %(link)s! They were last playing %(game)s. | Shout-out message format |
+| api_key | 0123456789abcdefghijklmnopqrstu | Twitch API Client-ID.
 """
     chunk = ''
     if config.option('Configuring LRB Shout-Out module', False):
         config.interactive_add('LRB', 'shoutmsg', 'shoutmsg',
             'Check out %(name)s on %(link)s! They were last playing %(game)s.')
+        config.interactive_add('LRB', 'api_key', 'api_key',
+            '0123456789abcdefghijklmnopqrstu')
     return chunk
 
 @commands('so')
@@ -34,11 +37,18 @@ def shoutout(bot, trigger):
         return bot.reply('I only let mods do shoutouts.')
     if trigger.group(2):
         try:
-            query_url = 'https://api.twitch.tv/kraken/channels/'+trigger.group(2)
-            answer = web.get(query_url)
-
+            query_url = 'https://api.twitch.tv/kraken/channels/{0}'+
+                        '?api_version=3&client_id={1}'
+            answer = web.get(query_url.format(trigger.group(2),
+                                              bot.config.LRB.api_key))
+        except:
+            return bot.reply("Couldn't contact the Twitch API servers. :( #BlameTwitch")
+        try:
             data = json.loads(answer)
+        except:
+            return bot.reply("The Twitch API returned an invalid object. :( #BlameTwitch")
 
+        try:
             replaceData = {'name': data['display_name'],
                 'link': data['url'], 'game': data['game']}
             return bot.say(bot.config.LRB.shoutmsg % replaceData)
