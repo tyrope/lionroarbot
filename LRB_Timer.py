@@ -14,20 +14,20 @@ from sopel.config.types import StaticSection, ValidatedAttribute
 
 class TimerSection(StaticSection):
     channel = ValidatedAttribute('channel', str, default='')
-    ctt_default = ValidatedAttribute('ctt_default', str, default='')
     timers_folder = ValidatedAttribute('timers_folder', str, default='')
     timers_link = ValidatedAttribute('timers_link', str, default='')
+    timers_delay = ValidatedAttribute('timers_delay', str, default='15')
 
 def configure(config):
     config.define_section('lrb', TimerSection)
     config.lrb.configure_setting('channel',
                                  "The channel to spam these messages in.")
-    config.lrb.configure_setting('ctt_default',
-                                 "The defailt click to tweet URL ID.")
     config.lrb.configure_setting('timers_folder',
                                  "The location where the bot will store the timers list.")
     config.lrb.configure_setting('timers_link',
                                  "The URL where people can see the timers list.")
+    config.lrb.configure_setting('timers_delay',
+                                 "The amount of minutes between automated messages.")
 
 def setup(bot):
     bot.db.execute('CREATE TABLE IF NOT EXISTS lrb_timers '+
@@ -39,6 +39,8 @@ def setup(bot):
 
 @interval(3600)
 def update_timers(bot):
+
+    # It is time.
     timers = list()
     for timer in bot.db.execute('SELECT * FROM lrb_timers'):
         # ALL THE TIMERS!
@@ -54,10 +56,10 @@ def update_timers(bot):
     listfile.close()
     return NOLIMIT
 
-@interval(900)
+@interval(60)
 def timed_message(bot):
     """
-    Spit out one of the pre-configured messages every 15 minutes.
+    Spit out one of the pre-configured messages every [LRB]timers_delay minutes.
     """
     if not 'index' in bot.memory['timer']:
         # Because for some reason in setup() it doesn't trigger all the time?
@@ -67,16 +69,25 @@ def timed_message(bot):
         # Timed messages are disabled.
         return NOLIMIT
 
+    if not 'delay' in bot.memory['timer']:
+        # Because initially, the delay isn't set.
+        bot.memory['timer']['delay'] = int(bot.config.LRB.timers_delay)
+
+    # Determine the delay.
+    bot.memory['timer']['delay'] += 1
+    if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
+        # Not time yet.
+        print "Not time yet. %s < %s" % (bot.memory['timer']['delay'],
+                                         bot.config.LRB.timers_delay)
+        return
+    # It is time.
+    bot.memory['timer']['delay'] = 0
+    print "It is time."
+
     # Fetch line.
     ret = bot.db.execute('SELECT message FROM lrb_timers WHERE id=?',
         str(bot.memory['timer']['index']))
     msg = ret.fetchone()[0]
-
-    # Click to tweet
-    if 'http://ctt.ec/' in msg:
-        if 'ctt' not in bot.memory['timer']:
-            bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
-        msg = msg % bot.memory['timer']['ctt']
 
     # Move index up one, or loop.
     bot.memory['timer']['index'] += 1
@@ -86,18 +97,6 @@ def timed_message(bot):
 
     # Say!
     bot.msg(bot.config.LRB.channel, msg)
-
-@commands('ctt')
-def ctt(bot, trigger):
-    if not trigger.admin: return NOLIMIT
-
-    if trigger.group(2):
-        bot.memory['timer']['ctt'] = trigger.group(2)
-        bot.reply('Updated click to tweet link to http://ctt.ec/%s' %
-            trigger.group(2))
-    else:
-        bot.memory['timer']['ctt'] = bot.config.LRB.ctt_default
-        bot.reply('Reset click to tweet link to default.')
 
 @commands('spam')
 def timer(bot, trigger):
