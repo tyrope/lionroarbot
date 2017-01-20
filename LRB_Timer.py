@@ -75,9 +75,11 @@ def timed_message(bot):
 
     # Determine the delay.
     bot.memory['timer']['delay'] += 1
+    print "Delay: {}, timer: {}".format(int(bot.config.LRB.timers_delay),
+                                        bot.memory['timer']['delay'])
+
     if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
         # Not time yet.
-        bot.say("Not time yet: " + bot.memory['timers']['delay'])
         return NOLIMIT
     # It is time.
     bot.memory['timer']['delay'] = 0
@@ -112,7 +114,7 @@ def timer(bot, trigger):
         bot.memory['timer']['enabled'] = False
         bot.say("Timed messages disabled.")
     elif arg in ('status', '?'):
-        bot.say(bot.memory['timer']['enabled'])
+        bot.say(str(bot.memory['timer']['enabled']))
     else:
         return NOLIMIT
 
