@@ -83,7 +83,7 @@ def timed_message(bot):
 
     # Fetch line.
     ret = bot.db.execute('SELECT message FROM lrb_timers WHERE id=?',
-        str(bot.memory['timer']['index']))
+        (str(bot.memory['timer']['index']),))
     msg = ret.fetchone()[0]
 
     # Move index up one, or loop.
