@@ -114,8 +114,9 @@ def timer(bot, trigger):
         bot.memory['timer']['enabled'] = False
         bot.say("Timed messages disabled.")
     elif arg in ('status', '?'):
-        if bot.memory['timer']['enabled']):
-            bot.say("Timers running, current delay: {}".format(bot.memory['timer']['delay'])
+        if bot.memory['timer']['enabled']:
+            bot.say("Timers running, current delay: {}".format(
+                bot.memory['timer']['delay']))
         else:
             bot.say("Timers are not running.")
     else:
