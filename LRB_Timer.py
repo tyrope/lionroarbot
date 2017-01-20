@@ -76,7 +76,7 @@ def timed_message(bot):
 
     # Determine the delay.
     bot.memory['timer']['delay'] += 1
-    bot.say(bot.config.LRB.channel,
+    bot.msg(bot.config.LRB.channel,
             "Let's count to {} minutes! Current minute: {}".format(
                 int(bot.config.LRB.timers_delay),
                 bot.memory['timer']['delay']))
