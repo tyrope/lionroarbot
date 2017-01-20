@@ -75,18 +75,18 @@ def timed_message(bot):
 
     # Determine the delay.
     bot.memory['timer']['delay'] += 1
-    print "Delay: {}, timer: {}".format(int(bot.config.LRB.timers_delay),
-                                        bot.memory['timer']['delay'])
-
+    bot.say("Let's count to {} minutes! Current minute: {}".format(int(bot.config.LRB.timers_delay),
+                                        bot.memory['timer']['delay']))
     if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
         # Not time yet.
         return NOLIMIT
-    # It is time.
-    bot.memory['timer']['delay'] = 0
+    else:
+        # It is time.
+        bot.memory['timer']['delay'] = 0
 
     # Fetch line.
     ret = bot.db.execute('SELECT message FROM lrb_timers WHERE id=?',
-        (str(bot.memory['timer']['index']),))
+        str(bot.memory['timer']['index']))
     msg = ret.fetchone()[0]
 
     # Move index up one, or loop.
