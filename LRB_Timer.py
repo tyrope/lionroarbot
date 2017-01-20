@@ -36,6 +36,7 @@ def setup(bot):
     bot.memory['timer'] = SopelMemory()
     bot.memory['timer']['index'] = 0
     bot.memory['timer']['enabled'] = False
+    bot.memory['timer']['delay'] = 999
 
 @interval(3600)
 def update_timers(bot):
@@ -70,13 +71,15 @@ def timed_message(bot):
         return NOLIMIT
 
     if not 'delay' in bot.memory['timer']:
-        # Because initially, the delay isn't set.
-        bot.memory['timer']['delay'] = int(bot.config.LRB.timers_delay)
+        # Because for some reason in setup() it doesn't trigger all the time?
+        bot.memory['timer']['delay'] = 999
 
     # Determine the delay.
     bot.memory['timer']['delay'] += 1
-    bot.say("Let's count to {} minutes! Current minute: {}".format(int(bot.config.LRB.timers_delay),
-                                        bot.memory['timer']['delay']))
+    bot.say(bot.config.LRB.channel,
+            "Let's count to {} minutes! Current minute: {}".format(
+                int(bot.config.LRB.timers_delay),
+                bot.memory['timer']['delay']))
     if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
         # Not time yet.
         return NOLIMIT
