@@ -1,6 +1,7 @@
 #coding: utf8
 """
 LRB-Timer.py - LionRoarBot timed message module.
+WARNING - RELOADING THIS MODULE CAN CAUSE UNEXPECTED BEHAVIOUR
 Copyright 2014-2015, Dimitri "Tyrope" Molenaars <tyrope@tyrope.nl>
 Licensed under the Eiffel Forum License 2.
 
@@ -76,10 +77,6 @@ def timed_message(bot):
 
     # Determine the delay.
     bot.memory['timer']['delay'] = bot.memory['timer']['delay'] + 1
-    bot.msg(bot.config.LRB.channel,
-            "Let's count to {} minutes! Current minute: {}".format(
-                int(bot.config.LRB.timers_delay),
-                bot.memory['timer']['delay']))
     if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
         # Not time yet.
         return NOLIMIT
@@ -117,7 +114,10 @@ def timer(bot, trigger):
         bot.memory['timer']['enabled'] = False
         bot.say("Timed messages disabled.")
     elif arg in ('status', '?'):
-        bot.say(str(bot.memory['timer']['enabled']))
+        if bot.memory['timer']['enabled']):
+            bot.say("Timers running, current delay: {}".format(bot.memory['timer']['delay'])
+        else:
+            bot.say("Timers are not running.")
     else:
         return NOLIMIT
 
