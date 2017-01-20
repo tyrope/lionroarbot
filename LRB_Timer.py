@@ -77,12 +77,9 @@ def timed_message(bot):
     bot.memory['timer']['delay'] += 1
     if bot.memory['timer']['delay'] < int(bot.config.LRB.timers_delay):
         # Not time yet.
-        print "Not time yet. %s < %s" % (bot.memory['timer']['delay'],
-                                         bot.config.LRB.timers_delay)
         return
     # It is time.
     bot.memory['timer']['delay'] = 0
-    print "It is time."
 
     # Fetch line.
     ret = bot.db.execute('SELECT message FROM lrb_timers WHERE id=?',
